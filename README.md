@@ -36,6 +36,7 @@
 ### Data
 
 - [x] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
+- [ ] ROS bag files (optional, based on ROS installation)
 - [x] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
 - [x] Support iterator-based loading and also block-based (random access) loading.
 

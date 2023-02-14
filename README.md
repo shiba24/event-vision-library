@@ -23,7 +23,26 @@
 
 ## Features
 
-- TODO
+### Algorithms
+
+- Pure-python library
+- Have different off-the-shelf methods, ready to use:
+    - [x] Optical Flow estimation
+    - [x] Image reconstruction
+    - [x] Ego-motion estimation
+    - more to come.
+- [ ] C++ implementation and extension for faster execution (TODO)
+
+### Data
+
+- [x] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
+- [x] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
+- [x] Support iterator-based loading and also block-based (random access) loading.
+
+### Log and Vsualization
+
+- [x] Various visualization for 2D/3D representation of events
+- [ ] Useful logging
 
 ## Requirements
 

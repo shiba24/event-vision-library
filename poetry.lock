@@ -1317,22 +1317,27 @@ files = [
 
 [[package]]
 name = "safety"
-version = "1.10.3"
-description = "Checks installed dependencies for known vulnerabilities."
+version = "2.3.5"
+description = "Checks installed dependencies for known vulnerabilities and licenses."
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = "*"
 files = [
-    {file = "safety-1.10.3-py2.py3-none-any.whl", hash = "sha256:5f802ad5df5614f9622d8d71fedec2757099705c2356f862847c58c6dfe13e84"},
-    {file = "safety-1.10.3.tar.gz", hash = "sha256:30e394d02a20ac49b7f65292d19d38fa927a8f9582cdfd3ad1adbbc66c641ad5"},
+    {file = "safety-2.3.5-py3-none-any.whl", hash = "sha256:2227fcac1b22b53c1615af78872b48348661691450aa25d6704a5504dbd1f7e2"},
+    {file = "safety-2.3.5.tar.gz", hash = "sha256:a60c11f8952f412cbb165d70cb1f673a3b43a2ba9a93ce11f97e6a4de834aa3a"},
 ]
 
 [package.dependencies]
-Click = ">=6.0"
-dparse = ">=0.5.1"
-packaging = "*"
+Click = ">=8.0.2"
+dparse = ">=0.6.2"
+packaging = ">=21.0,<22.0"
 requests = "*"
-setuptools = "*"
+"ruamel.yaml" = ">=0.17.21"
+setuptools = ">=19.3"
+
+[package.extras]
+github = ["jinja2 (>=3.1.0)", "pygithub (>=1.43.3)"]
+gitlab = ["python-gitlab (>=1.3.0)"]
 
 [[package]]
 name = "setuptools"

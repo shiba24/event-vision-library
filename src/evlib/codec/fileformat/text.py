@@ -1,0 +1,104 @@
+import logging
+
+import numpy as np
+
+logger = logging.getLogger(__name__)
+
+from ._iterator_access import IteratorAccess
+
+# TODO make parser abstract and merge these classes.
+
+
+class IteratorText(IteratorAccess):
+    FORMAT = "text"
+
+    def __init__(self, textfile: str) -> None:
+        super().__init__(textfile)
+        self.file = open(self.file_name, "r")
+
+    def __iter__(self):
+        self.count = 0
+        return self
+
+    def read_next_lines(self):
+        lines = self.file.readlines()
+        if not lines:
+            raise StopIteration
+        return lines
+
+    def __next__(self):
+        raise NotImplementedError
+
+
+class IteratorTextEvent(IteratorText):
+    def __next__(self):
+        """
+        Returns:
+            dict: {"x", "y", "t", "p": all np.ndarray (N)}
+        """
+        lines = self.read_next_lines()
+        _l = len(lines)
+        x = np.zeros((_l,), dtype=np.int32)
+        y = np.zeros((_l,), dtype=np.int32)
+        t = np.zeros((_l,), dtype=np.float64)
+        p = np.zeros((_l,), dtype=bool)
+        for _i, line in enumerate(lines):
+            val = line.split()
+            t[_i] = np.float64(val[0])
+            x[_i] = int(val[2])
+            y[_i] = int(val[1])
+            p[_i] = int(val[3])
+        self.count += _l
+        return {"x": x, "y": y, "t": t, "p": p, "num": _l}
+
+
+class IteratorTextPose(IteratorText):
+    def __next__(self):
+        """
+        Returns:
+            dict: {"pose": np.ndarray (N, 7)}
+        """
+        lines = self.read_next_lines()
+        _l = len(lines)
+        pose_list = []
+        for _i, line in enumerate(lines):
+            val = line.split()
+            pose_list.append(np.array(val, dtype=np.float64))
+        self.count += _l
+        return {"pose": np.stack(pose_list, axis=0), "num": _l}
+
+
+class IteratorTextImu(IteratorText):
+    def __next__(self):
+        """
+        Returns:
+            dict: {"imu": np.ndarray (N, 7)}
+        """
+        lines = self.read_next_lines()
+        _l = len(lines)
+        imu_list = []
+        for _i, line in enumerate(lines):
+            val = line.split()
+            imu_list.append(np.array(val, dtype=np.float64))
+        self.count += _l
+        return {"imu": np.stack(imu_list, axis=0), "num": _l}
+
+
+class IteratorTextFrame(IteratorText):
+    def __next__(self):
+        """
+        Returns:
+            dict: {"imu": np.ndarray (N, 7)}
+        """
+        lines = self.read_next_lines()
+        _l = len(lines)
+        image_list = []
+        image_timestamp = []
+        for line in lines:
+            val = line.split()
+            image_timestamp.append(np.float64(val[0]))
+            image_list.append(val[1])
+        # TODO needs to be implemented - needs to find the absolute path.
+        self.count += _l
+        image_timestamp = np.array(image_timestamp)
+        # return {"frame": , "t": image_timestamp, "num": _l}

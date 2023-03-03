@@ -27,22 +27,22 @@
 
 - Pure-python library
 - Have different off-the-shelf methods, ready to use:
-    - [x] Optical Flow estimation
-    - [x] Image reconstruction
-    - [x] Ego-motion estimation
+    - [ ] Optical Flow estimation
+    - [ ] Image reconstruction
+    - [ ] Ego-motion estimation
     - more to come.
 - [ ] C++ implementation and extension for faster execution (TODO)
 
 ### Data
 
-- [x] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
+- [ ] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
 - [ ] ROS bag files (optional, based on ROS installation)
-- [x] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
-- [x] Support iterator-based loading and also block-based (random access) loading.
+- [ ] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
+- [ ] Support iterator-based loading and also block-based (random access) loading.
 
 ### Log and Vsualization
 
-- [x] Various visualization for 2D/3D representation of events
+- [ ] Various visualization for 2D/3D representation of events
 - [ ] Useful logging
 
 ## Requirements
@@ -58,6 +58,51 @@ $ pip install event-vision-library
 ```
 
 ## Usage
+
+### Design note (data loader)
+
+```python
+# random (block) access
+data_loader = codec.block_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+events = data_loader.load_event(index1, index2) # n_events, 4
+
+dense_flow = tasks.dense.optical_flow.cmax(events, **params) # returns 2, H, W
+sparse_flow = tasks.sparse.optical_flow.triplet(events, **params) # returns n_events, 2
+intensity = tasks.dense.intensity_reconstruction.linear_inverse(events, flow, **params)  # returns H, W
+ang_vel = tasks.angular_velocity.cmax(events, **params)  # returns 3
+
+# iterator access
+data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
+for events in data_loader:
+    intensity = reconstructor.iterative_estimation(events, **params)  # returns H, W
+
+# Accessing IMU  - low priority
+data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="imu")
+for imu in data_loader:
+    print(imu)
+
+# Calibration - intrinsics
+data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
+calibrator = tasks.dense.calibration.e2vid_checkerboard()
+for events in data_loader:
+    intensity = reconstructor.iterative_run(events, **params)  # returns H, W
+    calibrator.calculate_intrinsics(intensity)
+
+# Calibration - extrinsics
+data_loader1 = codec.block_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+data_loader2 = codec.block_access.setup(fileformat=".raw", dataset_name="evk3", data_type="event")
+
+reconstructor1 = tasks.dense.intensity_reconstruction.e2vid(**param)
+reconstructor2 = tasks.dense.intensity_reconstruction.e2vid(**param)
+calibrator = tasks.dense.calibration.e2vid_checkerboard()
+# ... sync and load data as user specification
+
+intensity1 = reconstructor1.iterative_run(events1, **params)  # returns H, W
+intensity2 = reconstructor1.iterative_run(events2, **params)  # returns H, W
+calibrator.calculate_homography(intensity1, intensity2)
+```
 
 Please see the [Command-line Reference] for details.
 

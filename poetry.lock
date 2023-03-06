@@ -624,14 +624,14 @@ develop = ["build", "twine"]
 
 [[package]]
 name = "flatbuffers"
-version = "23.1.21"
+version = "23.3.3"
 description = "The FlatBuffers serialization format for Python"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "flatbuffers-23.1.21-py2.py3-none-any.whl", hash = "sha256:2e4101b291b14f21e87ea20b7bf7127b11563f6084e352d2d708bddd545c9265"},
-    {file = "flatbuffers-23.1.21.tar.gz", hash = "sha256:a948913bbb5d83c43a1193d7943c90e6c0ab732e7f2983111104250aeb61ff85"},
+    {file = "flatbuffers-23.3.3-py2.py3-none-any.whl", hash = "sha256:5ad36d376240090757e8f0a2cfaf6abcc81c6536c0dc988060375fd0899121f8"},
+    {file = "flatbuffers-23.3.3.tar.gz", hash = "sha256:cabd87c4882f37840f6081f094b2c5bc28cefc2a6357732746936d055ab45c3d"},
 ]
 
 [[package]]

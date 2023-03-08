@@ -1,6 +1,8 @@
 import logging
 
 import numpy as np
+import os
+import cv2
 
 logger = logging.getLogger(__name__)
 
@@ -88,8 +90,10 @@ class IteratorTextFrame(IteratorText):
     def __next__(self):
         """
         Returns:
-            dict: {"imu": np.ndarray (N, 7)}
+            dict: {"frame": np.ndarray (N, H, W), "t": np.ndarray (N)}
         """
+        # TODO assumption is that always images.txt and the image root dir is the same.
+        image_dir = os.path.dirname(self.file_name)
         lines = self.read_next_lines()
         _l = len(lines)
         image_list = []
@@ -97,8 +101,9 @@ class IteratorTextFrame(IteratorText):
         for line in lines:
             val = line.split()
             image_timestamp.append(np.float64(val[0]))
-            image_list.append(val[1])
-        # TODO needs to be implemented - needs to find the absolute path.
+            image_file = os.path.join(image_dir, val[1])
+            image_list.append(cv2.imread(image_file, cv2.IMREAD_GRAYSCALE))
         self.count += _l
         image_timestamp = np.array(image_timestamp)
-        # return {"frame": , "t": image_timestamp, "num": _l}
+        images = np.array(image_list)
+        return {"frame": images, "t": image_timestamp, "num": _l}

@@ -55,12 +55,6 @@ def load_event_timestamp_hdf5(
     return data
 
 
-# def load_event_array_hdf5(path: str, key_dtype_pairs: Tuple[str, str, Any]) -> Dict[str, np.ndarray]:
-#     """Wrapper function of load_hdf5().
-#     """
-#     return load_hdf5(path, key_dtype_pairs)
-
-
 def hdf5append(data, new_arr):
     n_old = data.shape[0]
     n_new = n_old + len(new_arr)

@@ -3,7 +3,6 @@ from typing import Any, Dict, Tuple
 
 import h5py
 import numpy as np
-from tqdm import tqdm
 
 from ._iterator_access import IteratorAccess
 from .hdf5 import hdf5append
@@ -34,7 +33,7 @@ def convert_iterator_access_to_hdf5(
     # TODO add filecheck of the hdf5.
     i = 0
     with h5py.File(hdf5file, "w") as f:
-        for iter_data in tqdm(iterator_access):
+        for iter_data in iterator_access:
             if i == 0:
                 for (k, v) in key_pairs.items():
                     if k in image_keys:

@@ -59,9 +59,39 @@ $ pip install event-vision-library
 
 ## Usage
 
+### Design note (data conversion)
+
+
+```python
+from evlib.codec import fileformat
+
+# from text file to hdf5
+ev_iter = fileformat.IteratorTextEvent('example_event.txt')
+data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
+fileformat.convert_iterator_access_to_hdf5(ev_iter, 'example_event.hdf5', data_keys)
+
+# from aedat to hdf5
+ev_iter = fileformat.IteratorAedat4Event('example_event.aedat')
+data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
+fileformat.convert_iterator_access_to_hdf5(ev_iter, 'example_event.hdf5', data_keys)
+
+fr_iter = fileformat.IteratorAedat4Frame(event_aedat_file)
+data_keys = {"frame": "frames/raw", "t": "frames/t"}
+fileformat.convert_iterator_access_to_hdf5(fr_iter, frame_cache_file, data_keys, image_keys=["frame"])
+
+# from evk to hdf5
+evk3_iter = fileformat.IteratorEvk3('example_event.raw')
+data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
+fileformat.convert_iterator_access_to_hdf5(evk3_iter, 'example_event.hdf5', data_keys)
+
+# TODO Roabag
+```
+
 ### Design note (data loader)
 
 ```python
+from evlib import codec
+
 # random (block) access
 data_loader = codec.block_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
 events = data_loader.load_event(index1, index2) # n_events, 4

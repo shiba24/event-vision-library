@@ -26,6 +26,7 @@ h5py = ">=3.2"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
 opencv-python = ">=4.6"
+wheel = ">=0.38.4"
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

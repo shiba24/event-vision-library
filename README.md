@@ -64,25 +64,27 @@ $ pip install event-vision-library
 
 ```python
 from evlib.codec import fileformat
+output_hdf5 = 'sample_output.hdf5'
 
-# from text file to hdf5
-ev_iter = fileformat.IteratorTextEvent('example_event.txt')
+# Event data: from text file to hdf5
+ev_iter = fileformat.IteratorTextEvent('./artifacts/sample_data/event.txt')
 data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(ev_iter, 'example_event.hdf5', data_keys)
+fileformat.convert_iterator_access_to_hdf5(ev_iter, output_hdf5, data_keys)
 
-# from aedat to hdf5
-ev_iter = fileformat.IteratorAedat4Event('example_event.aedat')
+# Event data: from aedat to hdf5
+ev_iter = fileformat.IteratorAedat4Event('./artifacts/sample_data/event.aedat')
 data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(ev_iter, 'example_event.hdf5', data_keys)
+fileformat.convert_iterator_access_to_hdf5(ev_iter, output_hdf5, data_keys)
 
-fr_iter = fileformat.IteratorAedat4Frame(event_aedat_file)
+# Frame data
+fr_iter = fileformat.IteratorAedat4Frame('./artifacts/sample_data/event.aedat')
 data_keys = {"frame": "frames/raw", "t": "frames/t"}
-fileformat.convert_iterator_access_to_hdf5(fr_iter, frame_cache_file, data_keys, image_keys=["frame"])
+fileformat.convert_iterator_access_to_hdf5(fr_iter, output_hdf5, data_keys, image_keys=["frame"])
 
 # from evk to hdf5
-evk3_iter = fileformat.IteratorEvk3('example_event.raw')
+evk3_iter = fileformat.IteratorEvk3('./artifacts/sample_data/event.raw')
 data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(evk3_iter, 'example_event.hdf5', data_keys)
+fileformat.convert_iterator_access_to_hdf5(evk3_iter, output_hdf5, data_keys)
 
 # TODO Roabag
 ```
@@ -93,7 +95,7 @@ fileformat.convert_iterator_access_to_hdf5(evk3_iter, 'example_event.hdf5', data
 from evlib import codec
 
 # random (block) access
-data_loader = codec.block_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
 events = data_loader.load_event(index1, index2) # n_events, 4
 
 dense_flow = tasks.dense.optical_flow.cmax(events, **params) # returns 2, H, W
@@ -102,18 +104,18 @@ intensity = tasks.dense.intensity_reconstruction.linear_inverse(events, flow, **
 ang_vel = tasks.angular_velocity.cmax(events, **params)  # returns 3
 
 # iterator access
-data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
 reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
 for events in data_loader:
     intensity = reconstructor.iterative_estimation(events, **params)  # returns H, W
 
 # Accessing IMU  - low priority
-data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="imu")
+data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="imu")
 for imu in data_loader:
     print(imu)
 
 # Calibration - intrinsics
-data_loader = codec.iterator_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
+data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
 reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
 calibrator = tasks.dense.calibration.e2vid_checkerboard()
 for events in data_loader:
@@ -121,8 +123,8 @@ for events in data_loader:
     calibrator.calculate_intrinsics(intensity)
 
 # Calibration - extrinsics
-data_loader1 = codec.block_access.setup(fileformat=".txt", dataset_name="davis", data_type="event")
-data_loader2 = codec.block_access.setup(fileformat=".raw", dataset_name="evk3", data_type="event")
+data_loader1 = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
+data_loader2 = codec.dataset.setup(fileformat=".raw", dataset_name="evk3", data_type="event")
 
 reconstructor1 = tasks.dense.intensity_reconstruction.e2vid(**param)
 reconstructor2 = tasks.dense.intensity_reconstruction.e2vid(**param)

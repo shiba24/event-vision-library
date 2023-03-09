@@ -15,6 +15,7 @@ class IteratorText(IteratorAccess):
     FORMAT = "text"
 
     def __init__(self, textfile: str) -> None:
+        # TODO add parse format option
         super().__init__(textfile)
         self.file = open(self.file_name, "r")
 

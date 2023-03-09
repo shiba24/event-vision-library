@@ -19,9 +19,9 @@ classifiers = [
 Changelog = "https://github.com/shiba24/event-vision-library/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7"
+python = "^3.7,<3.11"
 click = ">=8.0.1"
-numpy = ">=1.21"
+numpy = ">=1.21.2"
 h5py = ">=3.2"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"

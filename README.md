@@ -23,9 +23,11 @@
 
 ## Features
 
+- Python 3.7, 3.8, 3.9, 3.10
+- Pure-python library
+
 ### Algorithms
 
-- Pure-python library
 - Have different off-the-shelf methods, ready to use:
     - [ ] Optical Flow estimation
     - [ ] Image reconstruction
@@ -59,84 +61,7 @@ $ pip install event-vision-library
 
 ## Usage
 
-### Design note (data conversion)
-
-
-```python
-from evlib.codec import fileformat
-output_hdf5 = 'sample_output.hdf5'
-
-# Event data: from text file to hdf5
-ev_iter = fileformat.IteratorTextEvent('./artifacts/sample_data/event.txt')
-data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(ev_iter, output_hdf5, data_keys)
-
-# Event data: from aedat to hdf5
-ev_iter = fileformat.IteratorAedat4Event('./artifacts/sample_data/event.aedat')
-data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(ev_iter, output_hdf5, data_keys)
-
-# Frame data
-fr_iter = fileformat.IteratorAedat4Frame('./artifacts/sample_data/event.aedat')
-data_keys = {"frame": "frames/raw", "t": "frames/t"}
-fileformat.convert_iterator_access_to_hdf5(fr_iter, output_hdf5, data_keys, image_keys=["frame"])
-
-# from evk to hdf5
-evk3_iter = fileformat.IteratorEvk3('./artifacts/sample_data/event.raw')
-data_keys = {"x": "raw_events/x", "y": "raw_events/y", "t": "raw_events/t", "p": "raw_events/p"}
-fileformat.convert_iterator_access_to_hdf5(evk3_iter, output_hdf5, data_keys)
-
-# TODO Roabag
-```
-
-### Design note (data loader)
-
-```python
-from evlib import codec
-
-# random (block) access
-data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
-events = data_loader.load_event(index1, index2) # n_events, 4
-
-dense_flow = tasks.dense.optical_flow.cmax(events, **params) # returns 2, H, W
-sparse_flow = tasks.sparse.optical_flow.triplet(events, **params) # returns n_events, 2
-intensity = tasks.dense.intensity_reconstruction.linear_inverse(events, flow, **params)  # returns H, W
-ang_vel = tasks.angular_velocity.cmax(events, **params)  # returns 3
-
-# iterator access
-data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
-reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
-for events in data_loader:
-    intensity = reconstructor.iterative_estimation(events, **params)  # returns H, W
-
-# Accessing IMU  - low priority
-data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="imu")
-for imu in data_loader:
-    print(imu)
-
-# Calibration - intrinsics
-data_loader = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
-reconstructor = tasks.dense.intensity_reconstruction.e2vid(**param)
-calibrator = tasks.dense.calibration.e2vid_checkerboard()
-for events in data_loader:
-    intensity = reconstructor.iterative_run(events, **params)  # returns H, W
-    calibrator.calculate_intrinsics(intensity)
-
-# Calibration - extrinsics
-data_loader1 = codec.dataset.setup(fileformat=".txt", dataset_name="ecd", data_type="event")
-data_loader2 = codec.dataset.setup(fileformat=".raw", dataset_name="evk3", data_type="event")
-
-reconstructor1 = tasks.dense.intensity_reconstruction.e2vid(**param)
-reconstructor2 = tasks.dense.intensity_reconstruction.e2vid(**param)
-calibrator = tasks.dense.calibration.e2vid_checkerboard()
-# ... sync and load data as user specification
-
-intensity1 = reconstructor1.iterative_run(events1, **params)  # returns H, W
-intensity2 = reconstructor1.iterative_run(events2, **params)  # returns H, W
-calibrator.calculate_homography(intensity1, intensity2)
-```
-
-Please see the [Command-line Reference] for details.
+TBD
 
 ## Contributing
 
@@ -153,11 +78,10 @@ _Event Vision Library_ is free and open source software.
 If you encounter any problems,
 please [file an issue] along with a detailed description.
 
-## Credits
+## Acknowledgement
 
-This project was generated from [@cjolowicz]'s [Hypermodern Python Cookiecutter] template.
+This project was generated from [Hypermodern Python Cookiecutter] template.
 
-[@cjolowicz]: https://github.com/cjolowicz
 [pypi]: https://pypi.org/
 [hypermodern python cookiecutter]: https://github.com/cjolowicz/cookiecutter-hypermodern-python
 [file an issue]: https://github.com/shiba24/event-vision-library/issues

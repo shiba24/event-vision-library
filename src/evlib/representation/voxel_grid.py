@@ -4,6 +4,7 @@ import numpy as np
 class VoxelGrid:
     def __init__(self, image_shape: tuple, num_bins: int) -> None:
         """Create a voxel grid from events.
+        Implementation inspired by https://github.com/uzh-rpg/rpg_e2vid.
 
         Args:
             image_shape: (height, width)

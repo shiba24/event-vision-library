@@ -89,6 +89,7 @@ show_error_context = true
 allow_untyped_calls = true
 ignore_missing_imports = true
 disallow_any_generics = false
+mypy_path = "src"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

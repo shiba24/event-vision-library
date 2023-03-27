@@ -1,7 +1,7 @@
 from evlib.codec import fileformat
 
 
-def test_mock():
+def test_mock() -> None:
     pass
 
 # TODO setup small test data

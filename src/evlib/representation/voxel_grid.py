@@ -1,8 +1,11 @@
+from typing import Any
+from typing import Tuple
+
 import numpy as np
 
 
 class VoxelGrid:
-    def __init__(self, image_shape: tuple, num_bins: int) -> None:
+    def __init__(self, image_shape: Tuple[int, int], num_bins: int) -> None:
         """Create a voxel grid from events.
         Implementation inspired by https://github.com/uzh-rpg/rpg_e2vid.
 
@@ -51,18 +54,14 @@ class VoxelGrid:
 
         np.add.at(
             voxel_grid,
-            x[valid_indices]
-            + y[valid_indices] * width
-            + tis[valid_indices] * width * height,
+            x[valid_indices] + y[valid_indices] * width + tis[valid_indices] * width * height,
             vals_left[valid_indices],
         )
 
         valid_indices = (tis + 1) < self.num_bins
         np.add.at(
             voxel_grid,
-            x[valid_indices]
-            + y[valid_indices] * width
-            + (tis[valid_indices] + 1) * width * height,
+            x[valid_indices] + y[valid_indices] * width + (tis[valid_indices] + 1) * width * height,
             vals_right[valid_indices],
         )
 

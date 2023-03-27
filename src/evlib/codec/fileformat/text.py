@@ -1,12 +1,17 @@
 import logging
-
-import numpy as np
 import os
+from typing import Any
+from typing import Dict
+from typing import List
+
 import cv2
+import numpy as np
+
 
 logger = logging.getLogger(__name__)
 
 from ._iterator_access import IteratorAccess
+
 
 # TODO make parser abstract and merge these classes.
 
@@ -17,24 +22,24 @@ class IteratorText(IteratorAccess):
     def __init__(self, textfile: str) -> None:
         # TODO add parse format option
         super().__init__(textfile)
-        self.file = open(self.file_name, "r")
+        self.file = open(self.file_name)
 
-    def __iter__(self):
+    def __iter__(self) -> Any:
         self.count = 0
         return self
 
-    def read_next_lines(self):
+    def read_next_lines(self) -> List[str]:
         lines = self.file.readlines()
         if not lines:
             raise StopIteration
         return lines
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         raise NotImplementedError
 
 
 class IteratorTextEvent(IteratorText):
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"x", "y", "t", "p": all np.ndarray (N)}
@@ -56,7 +61,7 @@ class IteratorTextEvent(IteratorText):
 
 
 class IteratorTextPose(IteratorText):
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"pose": np.ndarray (N, 7)}
@@ -72,7 +77,7 @@ class IteratorTextPose(IteratorText):
 
 
 class IteratorTextImu(IteratorText):
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"imu": np.ndarray (N, 7)}
@@ -88,7 +93,7 @@ class IteratorTextImu(IteratorText):
 
 
 class IteratorTextFrame(IteratorText):
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"frame": np.ndarray (N, H, W), "t": np.ndarray (N)}
@@ -105,6 +110,6 @@ class IteratorTextFrame(IteratorText):
             image_file = os.path.join(image_dir, val[1])
             image_list.append(cv2.imread(image_file, cv2.IMREAD_GRAYSCALE))
         self.count += _l
-        image_timestamp = np.array(image_timestamp)
+        image_timestamps = np.array(image_timestamp)
         images = np.array(image_list)
-        return {"frame": images, "t": image_timestamp, "num": _l}
+        return {"frame": images, "t": image_timestamps, "num": _l}

@@ -1,12 +1,16 @@
 import logging
+from typing import Any
+from typing import Dict
 
 import dv
 import numpy as np
 from dv import AedatFile
 
+
 logger = logging.getLogger(__name__)
 
 from ._iterator_access import IteratorAccess
+
 
 # TODO make parser abstract and merge these classes.
 
@@ -19,7 +23,7 @@ class IteratorAedat4(IteratorAccess):
         self.file = dv.AedatFile(self.file_name)
         self.count = 0
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         raise NotImplementedError
 
 
@@ -28,7 +32,7 @@ class IteratorAedat4Event(IteratorAedat4):
         super().__init__(aedat4file)
         self.file_iter = self.file["events"].numpy()
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"x", "y", "t", "p": all np.ndarray (N)}
@@ -42,7 +46,7 @@ class IteratorAedat4Trigger(IteratorAedat4):
         super().__init__(aedat4file)
         self.file_iter = self.file["triggers"]
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"trigger": (1, 2)}
@@ -60,7 +64,7 @@ class IteratorAedat4Imu(IteratorAedat4):
         super().__init__(aedat4file)
         self.file_iter = self.file["imu"]
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"imu": np.ndarray (1, N, 7)}
@@ -78,7 +82,7 @@ class IteratorAedat4Frame(IteratorAedat4):
         super().__init__(aedat4file)
         self.file_iter = self.file["frames"]
 
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"t" (1, ), "image": (1, H, W, 3)}

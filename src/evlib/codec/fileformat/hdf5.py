@@ -1,15 +1,22 @@
 import logging
-from typing import Any, Dict, List, Tuple, Union
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
+from typing import Union
 
 import h5py
 import numpy as np
+
 
 H5_SET = Tuple[str, str, Any]
 
 logger = logging.getLogger(__name__)
 
 
-def load_hdf5(path: str, key_dtype_pairs: Union[List[H5_SET], H5_SET]) -> Dict[str, np.ndarray]:
+def load_hdf5(
+    path: str, key_dtype_pairs: Union[List[H5_SET], H5_SET]
+) -> Dict[str, np.ndarray]:
     """Load all the contents of .hdf5 file at once.
     Args:
         path (str) ... Path to the .hdf5 file.
@@ -39,7 +46,7 @@ def open_hdf5(path: str) -> Any:
 
 
 def load_event_timestamp_hdf5(
-    path: str, key_pairs: Tuple[str, str], dtype=np.int32
+    path: str, key_pairs: Tuple[str, str], dtype: type = np.int32
 ) -> Dict[str, np.ndarray]:
     """For utility: load only timestamps from the hdf5 data.
     Args:
@@ -48,14 +55,14 @@ def load_event_timestamp_hdf5(
             (key of the return dictionary, key of the hdf5 file data)
     Returns:
     """
-    data = load_hdf5(path, list(key_pairs + (dtype,)))
+    data = load_hdf5(path, list(key_pairs + (dtype,)))  # type: ignore
     if np.max(data[key_pairs[0]]) == np.iinfo(dtype):
         w = f"Please check the size of the data and data type. {dtype} may not be enough."
         logger.warning(w)
     return data
 
 
-def hdf5append(data, new_arr):
+def hdf5append(data: Any, new_arr: np.ndarray) -> None:
     n_old = data.shape[0]
     n_new = n_old + len(new_arr)
     data.resize(n_new, axis=0)

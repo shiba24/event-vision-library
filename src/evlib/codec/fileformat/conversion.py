@@ -1,11 +1,15 @@
 import logging
-from typing import Any, Dict, Tuple
+from typing import Any
+from typing import Dict
+from typing import List
+from typing import Tuple
 
 import h5py
 import numpy as np
 
 from ._iterator_access import IteratorAccess
 from .hdf5 import hdf5append
+
 
 logger = logging.getLogger(__name__)
 
@@ -14,7 +18,7 @@ def convert_iterator_access_to_hdf5(
     iterator_access: IteratorAccess,
     hdf5file: str,
     key_pairs: Dict[str, str],
-    image_keys: list = [],
+    image_keys: List[str] = [],
 ) -> int:
     """Convert IteratorAccess data format into HDF5 format.
 
@@ -39,9 +43,21 @@ def convert_iterator_access_to_hdf5(
                     if k in image_keys:
                         image = iter_data[k]
                         maxshape = (None,) + image.shape[1:]
-                        f.create_dataset(v, data=image, maxshape=maxshape, compression="gzip", compression_opts=9)  # type: ignore
+                        f.create_dataset(
+                            v,
+                            data=image,
+                            maxshape=maxshape,
+                            compression="gzip",
+                            compression_opts=9,
+                        )
                     else:
-                        f.create_dataset(v, data=iter_data[k], maxshape=(None,), compression="gzip", compression_opts=9)  # type: ignore
+                        f.create_dataset(
+                            v,
+                            data=iter_data[k],
+                            maxshape=(None,),
+                            compression="gzip",
+                            compression_opts=9,
+                        )
             else:
                 for (k, v) in key_pairs.items():
                     hdf5append(f[v], iter_data[k])

@@ -1,14 +1,17 @@
+from typing import Any
+from typing import Tuple
+
 import numpy as np
 
 
 class TimeMap:
-    def __init__(self, image_shape: tuple, decay: float) -> None:
+    def __init__(self, image_shape: Tuple[int, int], decay: float) -> None:
         """Create a time map of events. Adapted from:
         Lagorce, Xavier, et al. "Hots: a hierarchy of event-based time-surfaces for pattern recognition."
         IEEE transactions on pattern analysis and machine intelligence 39.7 (2016): 1346-1359.
-        
+
         Note that this implementation is a "random access implementation" and does not hold a state.
-        
+
         Args:
             image_shape: (height, width)
             decay: the factor in the exponential. A higher value leads to a stronger decay (sharper edges).
@@ -34,4 +37,4 @@ class TimeMap:
         x = events[:, 1].astype(int)
         t = events[:, 2]
         time_map[y, x] = t
-        return np.exp(-self.decay * (np.amax(t) - time_map))
+        return np.exp(-self.decay * (np.amax(t) - time_map))  # type: ignore

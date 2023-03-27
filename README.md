@@ -29,10 +29,10 @@
 ### Algorithms
 
 - Have different off-the-shelf methods, ready to use:
-    - [ ] Optical Flow estimation
-    - [ ] Image reconstruction
-    - [ ] Ego-motion estimation
-    - more to come.
+  - [ ] Optical Flow estimation
+  - [ ] Image reconstruction
+  - [ ] Ego-motion estimation
+  - more to come.
 - [ ] C++ implementation and extension for faster execution (TODO)
 
 ### Data

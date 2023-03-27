@@ -1,8 +1,11 @@
+from typing import Any
+from typing import Tuple
+
 import numpy as np
 
 
 class Histogram:
-    def __init__(self, image_shape: tuple, use_polarity: bool = True) -> None:
+    def __init__(self, image_shape: Tuple[int, int], use_polarity: bool = True) -> None:
         """Create a 2D histogram from event camera data.
 
         Args:
@@ -19,9 +22,13 @@ class Histogram:
     def _make_histogram(self, events: np.ndarray) -> np.ndarray:
         y = events[:, 0].astype(int)
         x = events[:, 1].astype(int)
-        histogram, _, _ = np.histogram2d(y, x, bins=[self.image_shape[0], self.image_shape[1]],
-                                         range=[[0, self.image_shape[0]], [0, self.image_shape[1]]])
-        return histogram
+        histogram, _, _ = np.histogram2d(
+            y,
+            x,
+            bins=[self.image_shape[0], self.image_shape[1]],
+            range=[[0, self.image_shape[0]], [0, self.image_shape[1]]],
+        )
+        return histogram  # type: ignore
 
     def __call__(self, events: np.ndarray) -> np.ndarray:
         """Create histogram.

@@ -3,6 +3,10 @@ name = "event-vision-library"
 version = "0.0.0a"
 description = "Event Vision Library"
 authors = ["Shintaro Shiba <shiba.shintaro@gmail.com>", "Friedhelm Hamann <friedhelmha2@gmail.com>"]
+maintainers = [
+    "Shintaro Shiba <shiba.shintaro@gmail.com>",
+    "Friedhelm Hamann <friedhelmha2@gmail.com>",
+]
 license = "MIT"
 readme = "README.md"
 homepage = "https://github.com/shiba24/event-vision-library"

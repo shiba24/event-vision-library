@@ -6,5 +6,6 @@
 /.pytype/
 /dist/
 /docs/_build/
+/docs/_autosummary/
 /src/*.egg-info/
 __pycache__/

@@ -14,6 +14,8 @@ from .hdf5 import hdf5append
 logger = logging.getLogger(__name__)
 
 
+# TODO this file should be abstracted layer of each fileformat R/W.
+# Move this function to hdf5
 def convert_iterator_access_to_hdf5(
     iterator_access: IteratorAccess,
     hdf5file: str,
@@ -64,3 +66,12 @@ def convert_iterator_access_to_hdf5(
             i += len(iter_data)
     logger.info(f"Done. Total {i} data points are processed.")
     return i
+
+
+# TODO this file should be abstracted layer of each fileformat R/W.
+# Move this function to text
+def write_to_text(
+    event: np.ndarray,
+    file_name: str
+) -> None:
+    np.savetxt(file_name, event[:, [2, 1, 0, 3]], fmt=['%.9f', '%d', '%d', '%d'])

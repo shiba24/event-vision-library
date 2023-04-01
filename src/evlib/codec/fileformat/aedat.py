@@ -38,7 +38,7 @@ class IteratorAedat4Event(IteratorAedat4):
             dict: {"x", "y", "t", "p": all np.ndarray (N)}
         """
         ev = self.file_iter.__next__()
-        return {"x": ev["y"], "y": ev["x"], "t": ev["timestamp"], "p": ev["polarity"]}
+        return {"x": ev["x"], "y": ev["y"], "t": ev["timestamp"], "p": ev["polarity"]}
 
 
 class IteratorAedat4Trigger(IteratorAedat4):
@@ -52,9 +52,6 @@ class IteratorAedat4Trigger(IteratorAedat4):
             dict: {"trigger": (1, 2)}
         """
         tr = self.file_iter.__next__()
-        # print('-=-=-', tr, tr.type)
-        # trigger_type = np.array([trig.type for trig in tr])
-        # trigger_ts = np.array([trig.timestamp for trig in tr])
         trigger = np.array([[tr.timestamp, tr.type]], dtype=np.float64)
         return {"trigger": trigger, "num": len(trigger)}
 

@@ -53,8 +53,8 @@ class IteratorTextEvent(IteratorText):
         for _i, line in enumerate(lines):
             val = line.split()
             t[_i] = np.float64(val[0])
-            x[_i] = int(val[2])
-            y[_i] = int(val[1])
+            x[_i] = int(val[1])
+            y[_i] = int(val[2])
             p[_i] = int(val[3])
         self.count += _l
         return {"x": x, "y": y, "t": t, "p": p, "num": _l}

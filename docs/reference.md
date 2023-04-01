@@ -2,11 +2,6 @@
 
 ## evlib
 
-<!-- ```{eval-rst}
-.. automodule:: evlib
-   :members:
-``` -->
-
 
 ```{eval-rst}
 .. autosummary::

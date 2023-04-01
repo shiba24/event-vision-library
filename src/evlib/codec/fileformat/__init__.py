@@ -1,4 +1,5 @@
-# Iterators
+"""Diffenet file formats for various event cameras and datasets.
+"""
 from .aedat import IteratorAedat4Event
 from .aedat import IteratorAedat4Frame
 from .aedat import IteratorAedat4Imu

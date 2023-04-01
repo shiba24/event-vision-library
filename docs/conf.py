@@ -23,7 +23,7 @@ autodoc_default_options = {
     "members": True,
     "inherited-members": True,
     'member-order': 'bysource',
-    'special-members': '__init__,__next__',
+    'special-members': '__init__,__next__,__call__',
     'undoc-members': True,
     # 'exclude-members': '__weakref__'
     # "exclude-members": "with_traceback",

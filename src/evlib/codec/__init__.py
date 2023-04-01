@@ -1,1 +1,1 @@
-"""Event Vision Library."""
+"""Event data I/O"""

@@ -1,3 +1,5 @@
+"""aedat file formats, mainly for DV software by iniVation.
+"""
 import logging
 from typing import Any
 from typing import Dict

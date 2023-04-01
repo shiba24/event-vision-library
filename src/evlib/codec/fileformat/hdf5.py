@@ -1,3 +1,5 @@
+"""hdf5 formats for various existing datasets.
+"""
 import logging
 from typing import Any
 from typing import Dict

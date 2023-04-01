@@ -1,3 +1,5 @@
+"""evk file formats, mainly for Metavision SDK software by Prophesee.
+"""
 import logging
 from typing import Any
 from typing import Dict

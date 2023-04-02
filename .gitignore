@@ -9,3 +9,6 @@
 /docs/_autosummary/
 /src/*.egg-info/
 __pycache__/
+
+venv/*
+artifacts/*

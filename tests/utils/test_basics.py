@@ -3,6 +3,11 @@ import numpy as np
 
 from evlib.utils import basics as basic_utils
 
+
+def test_import_torch():  # type: ignore
+    import torch
+
+
 def test_generate_events(tmp_path):    # type: ignore
     ne = 500
     height, width = 20, 40

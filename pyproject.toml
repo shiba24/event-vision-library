@@ -39,7 +39,7 @@ torch = [
     {version = ">=2.0.0", python = ">=3.8,<3.11"},
     {version = "<=2.0.0", python = "==3.7"}
 ]  # TODO check newer version of torch
-
+# check https://github.com/python-poetry/poetry/issues/6409 and https://github.com/pytorch/pytorch/issues/76557
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

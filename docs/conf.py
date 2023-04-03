@@ -18,7 +18,7 @@ extensions = [
 # Extensions
 autosummary_generate = True
 autodoc_typehints = "description"
-autoclass_content = "both",
+autoclass_content = "class",
 autodoc_default_options = {
     "members": True,
     "inherited-members": True,

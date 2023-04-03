@@ -5,14 +5,14 @@ import numpy as np
 
 
 class VoxelGrid:
-    def __init__(self, image_shape: Tuple[int, int], num_bins: int) -> None:
-        """Create a voxel grid from events.
-        Implementation inspired by https://github.com/uzh-rpg/rpg_e2vid.
+    """Create a voxel grid from events.
+    Implementation inspired by https://github.com/uzh-rpg/rpg_e2vid.
 
-        Args:
-            image_shape: (height, width)
-            num_bins: number of bins in the temporal axis of the voxel grid
-        """
+    Args:
+        image_shape: (height, width)
+        num_bins: number of bins in the temporal axis of the voxel grid
+    """
+    def __init__(self, image_shape: Tuple[int, int], num_bins: int) -> None:
         assert image_shape[0] > 0
         assert image_shape[1] > 0
         assert num_bins > 0

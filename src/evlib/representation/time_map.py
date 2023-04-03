@@ -5,17 +5,17 @@ import numpy as np
 
 
 class TimeMap:
+    """Create a time map of events. Adapted from:
+    Lagorce, Xavier, et al. "Hots: a hierarchy of event-based time-surfaces for pattern recognition."
+    IEEE transactions on pattern analysis and machine intelligence 39.7 (2016): 1346-1359.
+
+    Note that this implementation is a "random access implementation" and does not hold a state.
+
+    Args:
+        image_shape: (height, width)
+        decay: the factor in the exponential. A higher value leads to a stronger decay (sharper edges).
+    """
     def __init__(self, image_shape: Tuple[int, int], decay: float) -> None:
-        """Create a time map of events. Adapted from:
-        Lagorce, Xavier, et al. "Hots: a hierarchy of event-based time-surfaces for pattern recognition."
-        IEEE transactions on pattern analysis and machine intelligence 39.7 (2016): 1346-1359.
-
-        Note that this implementation is a "random access implementation" and does not hold a state.
-
-        Args:
-            image_shape: (height, width)
-            decay: the factor in the exponential. A higher value leads to a stronger decay (sharper edges).
-        """
         assert image_shape[0] > 0
         assert image_shape[1] > 0
         self.image_shape = image_shape

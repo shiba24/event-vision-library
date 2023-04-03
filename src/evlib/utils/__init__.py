@@ -1,1 +1,1 @@
-"""Event Vision Library."""
+"""Various utility functions."""

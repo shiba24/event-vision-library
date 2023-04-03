@@ -1,3 +1,5 @@
+"""hdf5 formats for various existing datasets.
+"""
 import logging
 from typing import Any
 from typing import Dict
@@ -24,6 +26,7 @@ def load_hdf5(
             (key of the return dictionary, key of the hdf5 file data, data type for numpy).
             For example,
             [("ts", "raw_events/ts", np.int32), ("x", "raw_events/x", np.int16), ...]
+
     Returns:
         dict ... {key of the return dictionary: np.ndarray}
     """
@@ -39,6 +42,7 @@ def open_hdf5(path: str) -> Any:
     """Open .hdf5 file, not to load them at once.
     Args:
         path (str) ... Path to the .hdf5 file.
+
     Returns:
         (Any) opened hdf5 object.
     """
@@ -53,7 +57,9 @@ def load_event_timestamp_hdf5(
         path (str) ... Path to the .hdf5 file.
         key_pairs  ... The tuple of
             (key of the return dictionary, key of the hdf5 file data)
+    
     Returns:
+        dict
     """
     data = load_hdf5(path, list(key_pairs + (dtype,)))  # type: ignore
     if np.max(data[key_pairs[0]]) == np.iinfo(dtype):

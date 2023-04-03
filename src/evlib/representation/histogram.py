@@ -5,15 +5,15 @@ import numpy as np
 
 
 class Histogram:
-    def __init__(self, image_shape: Tuple[int, int], use_polarity: bool = True) -> None:
-        """Create a 2D histogram from event camera data.
+    """Create a 2D histogram from event camera data.
 
-        Args:
-            image_shape: (height, width)
-            use_polarity: if True, counts every positive events as +1
-                          and every negative events as -1, if False,
-                          counts every events as +1
-        """
+    Args:
+        image_shape: (height, width)
+        use_polarity: if True, counts every positive events as +1
+                        and every negative events as -1, if False,
+                        counts every events as +1
+    """
+    def __init__(self, image_shape: Tuple[int, int], use_polarity: bool = True) -> None:
         assert image_shape[0] > 0
         assert image_shape[1] > 0
         self.image_shape = image_shape

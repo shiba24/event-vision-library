@@ -1,5 +1,9 @@
+import logging
+
 import torch
-from model.model import *
+from ..model.model import *
+
+logger = logging.getLogger('ev_lib')
 
 
 def load_model(path_to_model):
@@ -26,6 +30,6 @@ def get_device(use_gpu):
         device = torch.device('cuda:0')
     else:
         device = torch.device('cpu')
-    print('Device:', device)
+    logger.info('Device:', device)
 
     return device

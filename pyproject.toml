@@ -31,6 +31,10 @@ h5py = ">=3.2"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
 opencv-python = ">=4.6"
+scipy = [
+    {version = "==1.9.1", python = ">=3.8,<3.11"},
+    {version = "<=1.9.1", python = "==3.7"}
+]  # TODO check newer version of scipy
 
 [tool.poetry.dev-dependencies]
 Pygments = ">=2.10.0"

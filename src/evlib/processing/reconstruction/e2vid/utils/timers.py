@@ -8,7 +8,7 @@ timers = {}
 
 
 class CudaTimer:
-    def __init__(self, timer_name=''):
+    def __init__(self, timer_name: str='') -> None:
         self.timer_name = timer_name
         if self.timer_name not in cuda_timers:
             cuda_timers[self.timer_name] = []

@@ -77,7 +77,7 @@ class E2Vid:
                                        reporthook=progress_bar)
             logger.info("Done.")
 
-    def __call__(self, events) -> np.ndarray:
+    def __call__(self, events:np.ndarray) -> np.ndarray:
         """Reconstruct image from event batch
 
         Args:

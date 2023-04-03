@@ -1,21 +1,23 @@
+from typing import Optional, List, Tuple
+
 import torch
 import torch.nn as nn
-import torch.nn.functional as f
-from torch.nn import init
-from .submodules import ConvLayer, UpsampleConvLayer, TransposedConvLayer, RecurrentConvLayer, ResidualBlock, ConvLSTM, ConvGRU
+from .submodules import ConvLayer, UpsampleConvLayer, TransposedConvLayer, RecurrentConvLayer, ResidualBlock
 
 
-def skip_concat(x1, x2):
+def skip_concat(x1: torch.Tensor, x2: torch.Tensor) -> torch.Tensor:
     return torch.cat([x1, x2], dim=1)
 
 
-def skip_sum(x1, x2):
+def skip_sum(x1: torch.Tensor, x2: torch.Tensor) -> torch.Tensor:
     return x1 + x2
 
 
 class BaseUNet(nn.Module):
-    def __init__(self, num_input_channels, num_output_channels=1, skip_type='sum', activation='sigmoid',
-                 num_encoders=4, base_num_channels=32, num_residual_blocks=2, norm=None, use_upsample_conv=True):
+    def __init__(self, num_input_channels: int, num_output_channels: int=1,
+                 skip_type: str='sum', activation: str='sigmoid', num_encoders: int=4,
+                 base_num_channels: int=32, num_residual_blocks: int=2, norm: str=None,
+                 use_upsample_conv: bool=True) -> None:
         super(BaseUNet, self).__init__()
 
         self.num_input_channels = num_input_channels
@@ -48,12 +50,12 @@ class BaseUNet(nn.Module):
 
         self.activation = getattr(torch, self.activation, 'sigmoid')
 
-    def build_resblocks(self):
+    def build_resblocks(self) -> None:
         self.resblocks = nn.ModuleList()
         for i in range(self.num_residual_blocks):
             self.resblocks.append(ResidualBlock(self.max_num_channels, self.max_num_channels, norm=self.norm))
 
-    def build_decoders(self):
+    def build_decoders(self) -> None:
         decoder_input_sizes = list(reversed([self.base_num_channels * pow(2, i + 1) for i in range(self.num_encoders)]))
 
         self.decoders = nn.ModuleList()
@@ -62,14 +64,16 @@ class BaseUNet(nn.Module):
                                                     input_size // 2,
                                                     kernel_size=5, padding=2, norm=self.norm))
 
-    def build_prediction_layer(self):
+    def build_prediction_layer(self) -> None:
         self.pred = ConvLayer(self.base_num_channels if self.skip_type == 'sum' else 2 * self.base_num_channels,
                               self.num_output_channels, 1, activation=None, norm=self.norm)
 
 
 class UNet(BaseUNet):
-    def __init__(self, num_input_channels, num_output_channels=1, skip_type='sum', activation='sigmoid',
-                 num_encoders=4, base_num_channels=32, num_residual_blocks=2, norm=None, use_upsample_conv=True):
+    def __init__(self, num_input_channels: int, num_output_channels: int=1,
+                 skip_type: str='sum', activation: str='sigmoid', num_encoders: int=4,
+                 base_num_channels: int=32, num_residual_blocks: int=2, norm: str=None,
+                 use_upsample_conv: bool=True) -> None:
         super(UNet, self).__init__(num_input_channels, num_output_channels, skip_type, activation,
                                    num_encoders, base_num_channels, num_residual_blocks, norm, use_upsample_conv)
 
@@ -85,7 +89,7 @@ class UNet(BaseUNet):
         self.build_decoders()
         self.build_prediction_layer()
 
-    def forward(self, x):
+    def forward(self, x: torch.Tensor) -> torch.Tensor:
         """
         :param x: N x num_input_channels x H x W
         :return: N x num_output_channels x H x W
@@ -121,9 +125,10 @@ class UNetRecurrent(BaseUNet):
     Symmetric, skip connections on every encoding layer.
     """
 
-    def __init__(self, num_input_channels, num_output_channels=1, skip_type='sum',
-                 recurrent_block_type='convlstm', activation='sigmoid', num_encoders=4, base_num_channels=32,
-                 num_residual_blocks=2, norm=None, use_upsample_conv=True):
+    def __init__(self, num_input_channels: int, num_output_channels: int=1, skip_type: str='sum',
+                 recurrent_block_type: str='convlstm', activation: str='sigmoid',
+                 num_encoders: int=4, base_num_channels: int=32, num_residual_blocks: int=2,
+                 norm: str=None, use_upsample_conv: bool=True) -> None:
         super(UNetRecurrent, self).__init__(num_input_channels, num_output_channels, skip_type, activation,
                                             num_encoders, base_num_channels, num_residual_blocks, norm,
                                             use_upsample_conv)
@@ -142,7 +147,8 @@ class UNetRecurrent(BaseUNet):
         self.build_decoders()
         self.build_prediction_layer()
 
-    def forward(self, x, prev_states):
+    def forward(self, x: torch.Tensor, prev_states: Optional[List[torch.Tensor]]) -> Tuple[torch.Tensor,
+                                                                                           List[torch.Tensor]]:
         """
         :param x: N x num_input_channels x H x W
         :param prev_states: previous LSTM states for every encoder layer

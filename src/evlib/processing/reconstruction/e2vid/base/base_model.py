@@ -7,7 +7,7 @@ class BaseModel(nn.Module):
     """
     Base class for all models
     """
-    def __init__(self, config):
+    def __init__(self, config) -> None:
         super(BaseModel, self).__init__()
         self.config = config
         self.logger = logging.getLogger(self.__class__.__name__)
@@ -20,7 +20,7 @@ class BaseModel(nn.Module):
         """
         raise NotImplementedError
 
-    def summary(self):
+    def summary(self) -> None:
         """
         Model summary
         """

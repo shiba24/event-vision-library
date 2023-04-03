@@ -1,7 +1,7 @@
 import argparse
 
 
-def set_inference_options(parser: argparse.Parser) -> None:
+def set_inference_options(parser: argparse.ArgumentParser) -> None:
 
     parser.add_argument('-o', '--output_folder', default=None, type=str)  # if None, will not write the images to disk
     parser.add_argument('--dataset_name', default='reconstruction', type=str)

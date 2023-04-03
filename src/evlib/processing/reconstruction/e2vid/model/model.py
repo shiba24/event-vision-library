@@ -1,15 +1,13 @@
-from os.path import join
+from typing import Optional, List, Tuple
 
-import torch.nn as nn
 import torch
 
 from ..base import BaseModel
-from ..model.unet import UNet, UNetRecurrent
-from ..model.submodules import ConvLSTM, ResidualBlock, ConvLayer, UpsampleConvLayer, TransposedConvLayer
+from ..model.unet import UNetRecurrent
 
 
 class BaseE2VID(BaseModel):
-    def __init__(self, config):
+    def __init__(self, config: dict) -> None:
         super().__init__(config)
 
         assert('num_bins' in config)
@@ -46,34 +44,12 @@ class BaseE2VID(BaseModel):
             self.use_upsample_conv = True
 
 
-class E2VID(BaseE2VID):
-    def __init__(self, config):
-        super(E2VID, self).__init__(config)
-
-        self.unet = UNet(num_input_channels=self.num_bins,
-                         num_output_channels=1,
-                         skip_type=self.skip_type,
-                         activation='sigmoid',
-                         num_encoders=self.num_encoders,
-                         base_num_channels=self.base_num_channels,
-                         num_residual_blocks=self.num_residual_blocks,
-                         norm=self.norm,
-                         use_upsample_conv=self.use_upsample_conv)
-
-    def forward(self, event_tensor, prev_states=None):
-        """
-        :param event_tensor: N x num_bins x H x W
-        :return: a predicted image of size N x 1 x H x W, taking values in [0,1].
-        """
-        return self.unet.forward(event_tensor), None
-
-
 class E2VIDRecurrent(BaseE2VID):
     """
     Recurrent, UNet-like architecture where each encoder is followed by a ConvLSTM or ConvGRU.
     """
 
-    def __init__(self, config):
+    def __init__(self, config: dict) -> None:
         super(E2VIDRecurrent, self).__init__(config)
 
         try:
@@ -92,7 +68,9 @@ class E2VIDRecurrent(BaseE2VID):
                                            norm=self.norm,
                                            use_upsample_conv=self.use_upsample_conv)
 
-    def forward(self, event_tensor, prev_states):
+    def forward(self, event_tensor: torch.Tensor,
+                prev_states: Optional[List[torch.Tensor]]) -> Tuple[torch.Tensor,
+                                                                    List[torch.Tensor]]:
         """
         :param event_tensor: N x num_bins x H x W
         :param prev_states: previous ConvLSTM state for each encoder module

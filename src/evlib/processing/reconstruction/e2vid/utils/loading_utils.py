@@ -6,7 +6,7 @@ from ..model.model import *
 logger = logging.getLogger('ev_lib')
 
 
-def load_model(path_to_model):
+def load_model(path_to_model: str) -> torch.nn.Module:
     print('Loading model {}...'.format(path_to_model))
     raw_model = torch.load(path_to_model)
     arch = raw_model['arch']
@@ -25,7 +25,7 @@ def load_model(path_to_model):
     return model
 
 
-def get_device(use_gpu):
+def get_device(use_gpu: bool) -> torch.device:
     if use_gpu and torch.cuda.is_available():
         device = torch.device('cuda:0')
     else:

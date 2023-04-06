@@ -1,3 +1,4 @@
+from typing import Any
 import logging
 import torch.nn as nn
 import numpy as np
@@ -7,12 +8,12 @@ class BaseModel(nn.Module):
     """
     Base class for all models
     """
-    def __init__(self, config) -> None:
-        super(BaseModel, self).__init__()
+    def __init__(self, config) -> None:  # type: ignore
+        super().__init__()
         self.config = config
         self.logger = logging.getLogger(self.__class__.__name__)
 
-    def forward(self, *input):
+    def forward(self, *input):  # type: ignore
         """
         Forward pass logic
 

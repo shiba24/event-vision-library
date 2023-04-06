@@ -1,3 +1,4 @@
+from typing import Any
 import logging
 
 import torch
@@ -6,9 +7,9 @@ from ..model.model import *
 logger = logging.getLogger('ev_lib')
 
 
-def load_model(path_to_model: str) -> torch.nn.Module:
+def load_model(path_to_model: str) -> Any:
     print('Loading model {}...'.format(path_to_model))
-    raw_model = torch.load(path_to_model)
+    raw_model = torch.load(path_to_model, map_location=torch.device('cpu'))  # TODO handle CPU / GPU switch here
     arch = raw_model['arch']
 
     try:
@@ -21,7 +22,6 @@ def load_model(path_to_model: str) -> torch.nn.Module:
 
     # load model weights
     model.load_state_dict(raw_model['state_dict'])
-
     return model
 
 

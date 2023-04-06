@@ -111,7 +111,7 @@ class RecurrentConvLayer(nn.Module):
         if self.recurrent_block_type == 'convlstm':
             RecurrentBlock = ConvLSTM
         else:
-            RecurrentBlock = ConvGRU
+            raise NotImplementedError
         self.conv = ConvLayer(in_channels, out_channels, kernel_size, stride, padding, activation, norm)
         self.recurrent_block = RecurrentBlock(input_size=out_channels, hidden_size=out_channels, kernel_size=3)
 

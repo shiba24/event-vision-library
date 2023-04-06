@@ -5,12 +5,14 @@ import numpy as np
 
 from .model.model import *
 from .utils.inference_utils import CropParameters, EventPreprocessor, IntensityRescaler, ImageFilter, UnsharpMaskFilter
+from .utils.loading_utils import get_device
+
 class ImageReconstructor:
     def __init__(self, model: torch.nn.Module, height: int, width: int,
                  num_bins: int, options: Any) -> None:
         self.model = model
         self.use_gpu = options.use_gpu
-        self.device = torch.device('cuda:0') if self.use_gpu else torch.device('cpu')
+        self.device = get_device(self.use_gpu)
         self.height = height
         self.width = width
         self.num_bins = num_bins

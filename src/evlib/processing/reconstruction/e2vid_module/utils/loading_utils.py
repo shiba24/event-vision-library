@@ -9,7 +9,7 @@ logger = logging.getLogger('ev_lib')
 
 def load_model(path_to_model: str) -> Any:
     print('Loading model {}...'.format(path_to_model))
-    raw_model = torch.load(path_to_model)
+    raw_model = torch.load(path_to_model, map_location=torch.device('cpu'))  # TODO handle CPU / GPU switch here
     arch = raw_model['arch']
 
     try:
@@ -22,7 +22,6 @@ def load_model(path_to_model: str) -> Any:
 
     # load model weights
     model.load_state_dict(raw_model['state_dict'])
-
     return model
 
 

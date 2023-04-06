@@ -18,9 +18,6 @@ MODEL_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   "E2VID_lightweight.pth.tar")
 
 
-DEFAULT_OPTIONS = 
-
-
 def progress_bar(count: int, block_size: int, total_size: int) -> None:
     completed = count * block_size
     progress = completed / total_size

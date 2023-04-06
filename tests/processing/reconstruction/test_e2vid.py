@@ -1,9 +1,12 @@
+from typeguard import typeguard_ignore
+
 from evlib.utils import basics as basic_utils
 from evlib.processing.reconstruction import E2Vid
 
 import torch
 
 
+@typeguard_ignore
 def test_run_e2vid():    # type: ignore
     num_events = 500
     height, width = 20, 40
@@ -11,4 +14,3 @@ def test_run_e2vid():    # type: ignore
     reconstructor = E2Vid((height, width), use_gpu=torch.cuda.is_available())
     image = reconstructor(events)
     assert image.shape == (height, width)
-

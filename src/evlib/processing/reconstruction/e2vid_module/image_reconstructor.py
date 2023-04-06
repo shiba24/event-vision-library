@@ -73,4 +73,4 @@ class ImageReconstructor:
 
             # Post-processing, e.g bilateral filter (on CPU)
             out = self.image_filter(out)
-            return out  # type: ignore
+        return out  # type: ignore

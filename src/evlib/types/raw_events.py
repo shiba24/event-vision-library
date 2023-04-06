@@ -73,4 +73,4 @@ class RawEvents:
         Returns:
             npt.NDArray[np.float64]: 2-d numpy array, [n_events, 4].
         """
-        return np.stack([self.y, self.x, self.t, self.p]).astype(np.float64).T  # type: ignore
+        return np.stack([self.y, self.x, self.t, self.p]).astype(np.float64).T

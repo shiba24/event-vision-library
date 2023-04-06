@@ -7,10 +7,10 @@ from typing import Tuple
 import numpy as np
 import urllib.request
 
-from .utils.loading_utils import load_model, get_device
-from .image_reconstructor import ImageReconstructor
-from .options.inference_options import set_inference_options
-from ....representation import VoxelGrid  # TODO: import correctly from evlib
+from .e2vid_module.utils.loading_utils import load_model, get_device
+from .e2vid_module.image_reconstructor import ImageReconstructor
+from .e2vid_module.inference_options import set_inference_options
+from ...representation import VoxelGrid  # TODO: import correctly from evlib
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
 logger = logging.getLogger('ev_lib')

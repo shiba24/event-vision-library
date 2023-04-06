@@ -2,7 +2,7 @@ from typing import Optional, List, Tuple
 
 import torch
 
-from ..base import BaseModel
+from ..base_model import BaseModel
 from ..model.unet import UNetRecurrent
 
 

@@ -15,7 +15,4 @@ We will soon release a set of example use-cases.
 
 ## API References
 
-```{include} ./reference.md
-
-```
-
+Please see the reference page.

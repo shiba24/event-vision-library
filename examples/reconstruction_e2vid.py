@@ -1,9 +1,9 @@
 import numpy as np
 import cv2
 
-from src.evlib.processing.reconstruction import E2Vid
-from src.evlib.representation import Histogram
-from src.evlib.processing.reconstruction.e2vid.utils.event_readers import FixedDurationEventReader
+from evlib.processing.reconstruction import E2Vid
+from evlib.representation import Histogram
+from evlib.processing.reconstruction.e2vid.utils.event_readers import FixedDurationEventReader
 
 
 # Simple codre. There may be more efficient ways.

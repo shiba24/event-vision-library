@@ -1,5 +1,5 @@
 from evlib.utils import basics as basic_utils
-from src.evlib.processing.reconstruction import E2Vid
+from evlib.processing.reconstruction import E2Vid
 
 
 def test_run_e2vid_gpu():    # type: ignore

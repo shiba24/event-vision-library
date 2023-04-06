@@ -71,6 +71,7 @@ class E2Vid:
         self.image_shape = image_shape
         
         config_dict = {
+            "use_gpu": use_gpu,
             "unsharp_mask_amount": unsharp_mask_amount,
             "unsharp_mask_sigma": unsharp_mask_sigma,
             "bilateral_filter_sigma": bilateral_filter_sigma,

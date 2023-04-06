@@ -1,1 +1,1 @@
-from .e2vid import E2Vid as E2Vid
+from .e2vid.e2vid import E2Vid as E2Vid

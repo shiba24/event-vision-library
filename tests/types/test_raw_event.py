@@ -16,5 +16,5 @@ def test_raw_event_properties():    # type: ignore
     assert ev[0] == e.y
     assert ev[1] == e.x
     assert ev[2] == e.t == e.timestamp
-    assert ev[3] == e.p == e.p
+    assert ev[3] == e.p == e.polarity
     np.testing.assert_allclose(e.as_numpy(), ev)

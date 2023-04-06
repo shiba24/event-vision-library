@@ -72,7 +72,7 @@ class IntensityRescaler:
 
     def __init__(self, options: Any) -> None:
         self.auto_hdr = options.auto_hdr
-        self.intensity_bounds = deque()
+        self.intensity_bounds = deque()  # type: ignore
         self.auto_hdr_median_filter_size = options.auto_hdr_median_filter_size
         self.Imin = options.Imin
         self.Imax = options.Imax
@@ -133,10 +133,11 @@ class ImageFilter:
 
     def __call__(self, img: torch.Tensor) -> torch.Tensor:
         if self.bilateral_filter_sigma:
+            # TODO check - this looks like returning numpy, not torch.
             filtered_img = np.zeros_like(img)
             filtered_img = cv2.bilateralFilter(
                 img, 5, 25.0 * self.bilateral_filter_sigma, 25.0 * self.bilateral_filter_sigma)
-            img = filtered_img
+            img = filtered_img  # type: ignore
         return img
 
 

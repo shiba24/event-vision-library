@@ -27,7 +27,7 @@ class ImageReconstructor:
         if self.no_recurrent:
             print('!!Recurrent connection disabled!!')
 
-        n_encoders: int = self.model.num_encoders
+        n_encoders: int = self.model.num_encoders  # type: ignore
         self.crop = CropParameters(self.width, self.height, n_encoders)
 
         self.last_states_for_each_channel = {'grayscale': None}
@@ -60,14 +60,12 @@ class ImageReconstructor:
                     self.last_states_for_each_channel[channel] = states
 
                 # Output reconstructed image
-                crop = self.crop if channel == 'grayscale' else self.crop_halfres
+                crop = self.crop if channel == 'grayscale' else self.crop_halfres  # type: ignore
 
                 # Unsharp mask (on GPU)
                 new_predicted_frame = self.unsharp_mask_filter(new_predicted_frame)
-
                 # Intensity rescaler (on GPU)
                 new_predicted_frame = self.intensity_rescaler(new_predicted_frame)
-
                 reconstructions_for_each_channel[channel] = new_predicted_frame[0, 0, crop.iy0:crop.iy1,
                                                                                 crop.ix0:crop.ix1].cpu().numpy()
 
@@ -75,4 +73,4 @@ class ImageReconstructor:
 
             # Post-processing, e.g bilateral filter (on CPU)
             out = self.image_filter(out)
-            return out
+            return out  # type: ignore

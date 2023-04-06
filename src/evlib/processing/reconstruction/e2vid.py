@@ -28,9 +28,8 @@ def progress_bar(count: int, block_size: int, total_size: int) -> None:
     sys.stdout.flush()
 
 
-
-class DictionatyPropagation(object):
-    def __init__(self, *initial_data, **kwargs):
+class DictionatyPropagation():
+    def __init__(self, *initial_data, **kwargs):  # type: ignore
         for dictionary in initial_data:
             for key in dictionary:
                 setattr(self, key, dictionary[key])

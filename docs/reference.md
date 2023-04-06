@@ -3,6 +3,8 @@
 ## evlib
 
 
+The library consists of several sub modules.
+
 ```{eval-rst}
 .. autosummary::
    :toctree: _autosummary
@@ -11,5 +13,6 @@
    evlib.codec
    evlib.representation
    evlib.utils
+   evlib.types
 ```
 

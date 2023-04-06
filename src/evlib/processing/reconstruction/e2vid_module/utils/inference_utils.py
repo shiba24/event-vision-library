@@ -37,24 +37,11 @@ class EventPreprocessor:
         else:
             print('Will normalize event tensors.')
 
-        self.hot_pixel_locations = []
-        if options.hot_pixels_file:
-            try:
-                self.hot_pixel_locations = np.loadtxt(options.hot_pixels_file, delimiter=',').astype(np.int)
-                print('Will remove {} hot pixels'.format(self.hot_pixel_locations.shape[0]))
-            except IOError:
-                print('WARNING: could not load hot pixels file: {}'.format(options.hot_pixels_file))
-
         self.flip = options.flip
         if self.flip:
             print('Will flip event tensors.')
 
     def __call__(self, events: torch.Tensor) -> torch.Tensor:
-
-        # Remove (i.e. zero out) the hot pixels
-        for x, y in self.hot_pixel_locations:
-            events[:, :, y, x] = 0
-
         # Flip tensor vertically and horizontally
         if self.flip:
             events = torch.flip(events, dims=[2, 3])

@@ -36,7 +36,7 @@ class BaseE2VID(BaseModel):
         try:
             self.norm = str(config['norm'])
         except KeyError:
-            self.norm = None
+            self.norm = None  # type: ignore
 
         try:
             self.use_upsample_conv = bool(config['use_upsample_conv'])

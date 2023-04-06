@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Callable
 
 import torch
 import torch.nn as nn
@@ -14,9 +14,9 @@ class ConvLayer(nn.Module):
         bias = False if norm == 'BN' else True
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=bias)
         if activation is not None:
-            self.activation = getattr(torch, activation, 'relu')
+            self.activation: Callable = getattr(torch, activation, 'relu')
         else:
-            self.activation = None
+            self.activation = None  # type: ignore
 
         self.norm = norm
         if norm == 'BN':
@@ -46,9 +46,9 @@ class TransposedConvLayer(nn.Module):
             in_channels, out_channels, kernel_size, stride=2, padding=padding, output_padding=1, bias=bias)
 
         if activation is not None:
-            self.activation = getattr(torch, activation, 'relu')
+            self.activation: Callable = getattr(torch, activation, 'relu')
         else:
-            self.activation = None
+            self.activation = None  # type: ignore
 
         self.norm = norm
         if norm == 'BN':
@@ -77,9 +77,9 @@ class UpsampleConvLayer(nn.Module):
         self.conv2d = nn.Conv2d(in_channels, out_channels, kernel_size, stride, padding, bias=bias)
 
         if activation is not None:
-            self.activation = getattr(torch, activation, 'relu')
+            self.activation: Callable = getattr(torch, activation, 'relu')
         else:
-            self.activation = None
+            self.activation = None  # type: ignore
 
         self.norm = norm
         if norm == 'BN':

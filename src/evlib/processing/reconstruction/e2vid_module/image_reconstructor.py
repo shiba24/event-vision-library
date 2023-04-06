@@ -25,22 +25,10 @@ class ImageReconstructor:
         if self.no_recurrent:
             print('!!Recurrent connection disabled!!')
 
-        self.perform_color_reconstruction = options.color  # whether to perform color reconstruction (only use this with the DAVIS346color)
-        if self.perform_color_reconstruction:
-            if options.auto_hdr:
-                print('!!Warning: disabling auto HDR for color reconstruction!!')
-            options.auto_hdr = False  # disable auto_hdr for color reconstruction (otherwise, each channel will be normalized independently)
-
-        self.crop = CropParameters(self.width, self.height, self.model.num_encoders)
+        n_encoders: int = self.model.num_encoders
+        self.crop = CropParameters(self.width, self.height, n_encoders)
 
         self.last_states_for_each_channel = {'grayscale': None}
-
-        if self.perform_color_reconstruction:
-            self.crop_halfres = CropParameters(int(width / 2), int(height / 2),
-                                               self.model.num_encoders)
-            for channel in ['R', 'G', 'B', 'W']:
-                self.last_states_for_each_channel[channel] = None
-
         self.event_preprocessor = EventPreprocessor(options)
         self.intensity_rescaler = IntensityRescaler(options)
         self.image_filter = ImageFilter(options)
@@ -59,12 +47,6 @@ class ImageReconstructor:
             # Resize tensor to [1 x C x crop_size x crop_size] by applying zero padding
             events_for_each_channel = {'grayscale': self.crop.pad(events)}
             reconstructions_for_each_channel = {}
-            if self.perform_color_reconstruction:
-                events_for_each_channel['R'] = self.crop_halfres.pad(events[:, :, 0::2, 0::2])
-                events_for_each_channel['G'] = self.crop_halfres.pad(events[:, :, 0::2, 1::2])
-                events_for_each_channel['W'] = self.crop_halfres.pad(events[:, :, 1::2, 0::2])
-                events_for_each_channel['B'] = self.crop_halfres.pad(events[:, :, 1::2, 1::2])
-
             # Reconstruct new intensity image for each channel (grayscale + RGBW if color reconstruction is enabled)
             for channel in events_for_each_channel.keys():
                 new_predicted_frame, states = self.model(events_for_each_channel[channel],

@@ -1,3 +1,4 @@
+from typing import Any
 import logging
 
 import torch
@@ -6,7 +7,7 @@ from ..model.model import *
 logger = logging.getLogger('ev_lib')
 
 
-def load_model(path_to_model: str) -> torch.nn.Module:
+def load_model(path_to_model: str) -> Any:
     print('Loading model {}...'.format(path_to_model))
     raw_model = torch.load(path_to_model)
     arch = raw_model['arch']

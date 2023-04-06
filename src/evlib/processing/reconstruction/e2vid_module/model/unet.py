@@ -1,4 +1,4 @@
-from typing import Optional, List, Tuple
+from typing import Optional, List, Tuple, Callable
 
 import torch
 import torch.nn as nn
@@ -15,7 +15,7 @@ def skip_sum(x1: torch.Tensor, x2: torch.Tensor) -> torch.Tensor:
 
 class BaseUNet(nn.Module):
     def __init__(self, num_input_channels: int, num_output_channels: int=1,
-                 skip_type: str='sum', activation: str='sigmoid', num_encoders: int=4,
+                 skip_type: str='sum', activation: Optional[str]='sigmoid', num_encoders: int=4,
                  base_num_channels: int=32, num_residual_blocks: int=2, norm: str=None,
                  use_upsample_conv: bool=True) -> None:
         super(BaseUNet, self).__init__()
@@ -24,7 +24,7 @@ class BaseUNet(nn.Module):
         self.num_output_channels = num_output_channels
         self.skip_type = skip_type
         self.apply_skip_connection = skip_sum if self.skip_type == 'sum' else skip_concat
-        self.activation = activation
+        self.activation_func = activation
         self.norm = norm
 
         if use_upsample_conv:
@@ -48,7 +48,7 @@ class BaseUNet(nn.Module):
 
         self.encoder_output_sizes = [self.base_num_channels * pow(2, i + 1) for i in range(self.num_encoders)]
 
-        self.activation = getattr(torch, self.activation, 'sigmoid')
+        self.activation: Callable = getattr(torch, self.activation_func, 'sigmoid')
 
     def build_resblocks(self) -> None:
         self.resblocks = nn.ModuleList()
@@ -71,7 +71,7 @@ class BaseUNet(nn.Module):
 
 class UNet(BaseUNet):
     def __init__(self, num_input_channels: int, num_output_channels: int=1,
-                 skip_type: str='sum', activation: str='sigmoid', num_encoders: int=4,
+                 skip_type: str='sum', activation: Optional[str]='sigmoid', num_encoders: int=4,
                  base_num_channels: int=32, num_residual_blocks: int=2, norm: str=None,
                  use_upsample_conv: bool=True) -> None:
         super(UNet, self).__init__(num_input_channels, num_output_channels, skip_type, activation,
@@ -126,7 +126,7 @@ class UNetRecurrent(BaseUNet):
     """
 
     def __init__(self, num_input_channels: int, num_output_channels: int=1, skip_type: str='sum',
-                 recurrent_block_type: str='convlstm', activation: str='sigmoid',
+                 recurrent_block_type: str='convlstm', activation: Optional[str]='sigmoid',
                  num_encoders: int=4, base_num_channels: int=32, num_residual_blocks: int=2,
                  norm: str=None, use_upsample_conv: bool=True) -> None:
         super(UNetRecurrent, self).__init__(num_input_channels, num_output_channels, skip_type, activation,

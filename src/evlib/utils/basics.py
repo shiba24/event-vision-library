@@ -1,3 +1,4 @@
+"""Basic utility functions."""
 import numpy as np
 
 def generate_events(

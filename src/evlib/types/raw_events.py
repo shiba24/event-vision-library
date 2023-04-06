@@ -1,3 +1,4 @@
+"""Data type for multiple events."""
 import copy
 from dataclasses import dataclass
 from typing import Any, List, Optional

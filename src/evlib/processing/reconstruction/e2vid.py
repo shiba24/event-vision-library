@@ -1,4 +1,3 @@
-import argparse
 import os
 import logging
 import sys
@@ -9,7 +8,6 @@ import urllib.request
 
 from .e2vid_module.utils.loading_utils import load_model, get_device
 from .e2vid_module.image_reconstructor import ImageReconstructor
-from .e2vid_module.inference_options import set_inference_options
 from ...representation import VoxelGrid  # TODO: import correctly from evlib
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s [%(levelname)s] %(message)s')
@@ -20,6 +18,9 @@ MODEL_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                   "E2VID_lightweight.pth.tar")
 
 
+DEFAULT_OPTIONS = 
+
+
 def progress_bar(count: int, block_size: int, total_size: int) -> None:
     completed = count * block_size
     progress = completed / total_size
@@ -28,6 +29,16 @@ def progress_bar(count: int, block_size: int, total_size: int) -> None:
     bar = "=" * filled_length + "-" * (bar_length - filled_length)
     sys.stdout.write(f"\rDownloading: [{bar}] {progress:.2%}")
     sys.stdout.flush()
+
+
+
+class DictionatyPropagation(object):
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
 
 
 class E2Vid:
@@ -44,14 +55,37 @@ class E2Vid:
         image_shape: (height, width)
         use_gpu: if GPU should be used for image reconstruction
     """
-    def __init__(self, image_shape: Tuple[int, int], use_gpu: bool = True) -> None:
+    def __init__(self,
+                 image_shape: Tuple[int, int],
+                 use_gpu: bool = True,
+                 unsharp_mask_amount: float = 0.3,
+                 unsharp_mask_sigma: float = 1.0,
+                 bilateral_filter_sigma: float = 0.0,
+                 flip: bool = False,
+                 Imin: float = 0.0,
+                 Imax: float = 1.0,
+                 auto_hdr: bool = False,
+                 auto_hdr_median_filter_size: int = 10,
+                 no_normalize: bool = False,
+                 no_recurrent: bool = False,                 
+                 ) -> None:
         assert image_shape[0] > 0
         assert image_shape[1] > 0
         self.image_shape = image_shape
-
-        parser = argparse.ArgumentParser()
-        set_inference_options(parser)
-        args = parser.parse_args()
+        
+        config_dict = {
+            "unsharp_mask_amount": unsharp_mask_amount,
+            "unsharp_mask_sigma": unsharp_mask_sigma,
+            "bilateral_filter_sigma": bilateral_filter_sigma,
+            "flip": flip,
+            "Imin": Imin,
+            "Imax": Imax,
+            "auto_hdr": auto_hdr,
+            "auto_hdr_median_filter_size": auto_hdr_median_filter_size,
+            "no_normalize": no_normalize,
+            "no_recurrent": no_recurrent,
+        }
+        config = DictionatyPropagation(config_dict)
 
         self._download_model()
         self.model = load_model(MODEL_PATH)
@@ -63,7 +97,7 @@ class E2Vid:
         self.voxelizer = VoxelGrid(image_shape, n_bins)
         self.reconstructor = ImageReconstructor(self.model, image_shape[0],
                                                 image_shape[1], n_bins,
-                                                args)
+                                                config)
 
     def _download_model(self) -> None:
         e2vid_pretrained_url = "http://rpg.ifi.uzh.ch/data/E2VID/models/E2VID_lightweight.pth.tar"

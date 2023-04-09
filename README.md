@@ -25,6 +25,7 @@
 
 - Python 3.7, 3.8, 3.9, 3.10
 - Pure-python library
+- 🚧 This library is under construction and currently alpha version. The APIs may change significantly. Contributions and discussions are welcomed! 🚧
 
 ### Data
 

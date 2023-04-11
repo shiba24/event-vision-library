@@ -11,6 +11,7 @@ from dv import AedatFile
 
 logger = logging.getLogger(__name__)
 
+from ...types import RawEvents
 from ._iterator_access import IteratorAccess
 
 
@@ -25,22 +26,19 @@ class IteratorAedat4(IteratorAccess):
         self.file = dv.AedatFile(self.file_name)
         self.count = 0
 
-    def __next__(self) -> Dict[str, Any]:
-        raise NotImplementedError
-
 
 class IteratorAedat4Event(IteratorAedat4):
     def __init__(self, aedat4file: str) -> None:
         super().__init__(aedat4file)
         self.file_iter = self.file["events"].numpy()
 
-    def __next__(self) -> Dict[str, Any]:
+    def __next__(self) -> RawEvents:
         """
         Returns:
-            dict: {"x", "y", "t", "p": all np.ndarray (N)}
+            RawEvents:
         """
         ev = self.file_iter.__next__()
-        return {"x": ev["x"], "y": ev["y"], "t": ev["timestamp"], "p": ev["polarity"]}
+        return RawEvents(x=ev["x"], y=ev["y"], timestamp=ev["timestamp"], polarity=ev["polarity"])
 
 
 class IteratorAedat4Trigger(IteratorAedat4):

@@ -1,7 +1,7 @@
 """Data type for multiple events."""
 import copy
 from dataclasses import dataclass
-from typing import Any, List, Optional
+from typing import Any, List, Optional, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -31,7 +31,7 @@ class RawEvents:
         return self.timestamp
 
     # Build-ins
-    def __getitem__(self, index: int) -> npt.NDArray[np.float64]:
+    def __getitem__(self, index: Union[int, str]) -> npt.NDArray[np.float64]:
         """Get an event as numpy array.
 
         Args:
@@ -40,6 +40,8 @@ class RawEvents:
         Returns:
             npt.NDArray[np.float64]: 1-d numpy array.
         """
+        if isinstance(index, str):
+            return getattr(self, index)  # type: ignore
         return np.array([self.y[index], self.x[index], self.t[index], self.p[index]], dtype=np.float64)
 
     def __len__(self) -> int:

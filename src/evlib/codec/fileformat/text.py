@@ -12,6 +12,7 @@ import numpy as np
 
 logger = logging.getLogger(__name__)
 
+from ...types import RawEvents
 from ._iterator_access import IteratorAccess
 
 
@@ -36,15 +37,12 @@ class IteratorText(IteratorAccess):
             raise StopIteration
         return lines
 
-    def __next__(self) -> Dict[str, Any]:
-        raise NotImplementedError
-
 
 class IteratorTextEvent(IteratorText):
-    def __next__(self) -> Dict[str, Any]:
+    def __next__(self) -> RawEvents:
         """
         Returns:
-            dict: {"x", "y", "t", "p": all np.ndarray (N)}
+            RawEvents: events
         """
         lines = self.read_next_lines()
         _l = len(lines)
@@ -59,7 +57,7 @@ class IteratorTextEvent(IteratorText):
             y[_i] = int(val[2])
             p[_i] = int(val[3])
         self.count += _l
-        return {"x": x, "y": y, "t": t, "p": p, "num": _l}
+        return RawEvents(x=x, y=y, timestamp=t, polarity=p)
 
 
 class IteratorTextPose(IteratorText):

@@ -21,12 +21,11 @@ def hot_pixel_filter(events: NUMPY_TORCH, image_shape: tuple, hot_pixel: int = 1
         val, counts = np.unique(pix_index, return_counts=True)
         dup_vals = val[counts > hot_pixel]  # the unique index for hot pixel locations
         hot_event_index = np.in1d(pix_index, dup_vals)  # bool of the events belong to the hot pixels
-        filtered_event = events[~hot_event_index]
     elif isinstance(events, torch.Tensor):
         pix_index = (xy[..., 0] + xy[..., 1] * image_shape[0]).long()   # unique indices at all pixels
         val, counts = torch.unique(pix_index, return_counts=True)
         dup_vals = val[counts > hot_pixel]  # the unique index for hot pixel locations
         hot_event_index = torch.isin(pix_index, dup_vals)  # bool of the events belong to the hot pixels
-        filtered_event = events[~hot_event_index]
+    filtered_event = events[~hot_event_index]
     return filtered_event  # type: ignore
 

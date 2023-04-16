@@ -5,7 +5,7 @@ from evlib.utils import basics as basic_utils
 from evlib.representation import Histogram
 
 
-def test_generate_events():    # type: ignore
+def test_build_histogram_shape():    # type: ignore
     ne = 500
     height, width = 20, 40
     ev = basic_utils.generate_events(ne, height, width, 0.1, 0.24)

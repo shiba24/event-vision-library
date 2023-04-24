@@ -828,13 +828,13 @@ i18n = ["Babel (>=2.7)"]
 
 [[package]]
 name = "lit"
-version = "16.0.0"
+version = "16.0.1"
 description = "A Software Testing Tool"
 category = "main"
 optional = false
 python-versions = "*"
 files = [
-    {file = "lit-16.0.0.tar.gz", hash = "sha256:3c4ac372122a1de4a88deb277b956f91b7209420a0bef683b1ab2d2b16dabe11"},
+    {file = "lit-16.0.1.tar.gz", hash = "sha256:630a47291b714cb115015df23ab04267c24fe59aec7ecd7e637d5c75cdb45c91"},
 ]
 
 [[package]]

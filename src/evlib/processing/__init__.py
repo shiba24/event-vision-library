@@ -1,1 +1,1 @@
-"""Event Vision Library."""
+"""Processing module."""

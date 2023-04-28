@@ -11,5 +11,5 @@ class IteratorAccess:
     def __iter__(self) -> Any:
         return self
 
-    def __next__(self) -> Dict[str, Any]:
+    def __next__(self) -> Any:
         raise NotImplementedError

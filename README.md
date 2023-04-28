@@ -25,6 +25,14 @@
 
 - Python 3.7, 3.8, 3.9, 3.10
 - Pure-python library
+- 🚧 This library is under construction and currently alpha version. The APIs may change significantly. Contributions and discussions are welcomed! 🚧
+
+### Data
+
+- [ ] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
+- [ ] ROS bag files (optional, based on ROS installation)
+- [ ] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
+- [ ] Support iterator-based loading and also block-based (random access) loading.
 
 ### Algorithms
 
@@ -35,21 +43,10 @@
   - more to come.
 - [ ] C++ implementation and extension for faster execution (TODO)
 
-### Data
-
-- [ ] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
-- [ ] ROS bag files (optional, based on ROS installation)
-- [ ] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
-- [ ] Support iterator-based loading and also block-based (random access) loading.
-
 ### Log and Vsualization
 
 - [ ] Various visualization for 2D/3D representation of events
 - [ ] Useful logging
-
-## Requirements
-
-- TODO
 
 ## Installation
 
@@ -61,7 +58,7 @@ $ pip install event-vision-library
 
 ## Usage
 
-TBD
+Please see our examples and documentations.
 
 ## Contributing
 

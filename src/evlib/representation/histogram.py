@@ -1,3 +1,5 @@
+"""Histogram representation.
+"""
 from typing import Any
 from typing import Tuple
 

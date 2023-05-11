@@ -30,6 +30,6 @@ def get_device(use_gpu: bool) -> torch.device:
         device = torch.device('cuda:0')
     else:
         device = torch.device('cpu')
-    logger.info('Device:', device)
+    logger.info(f'Device: {device}')
 
     return device

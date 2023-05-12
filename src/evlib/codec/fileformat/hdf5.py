@@ -22,14 +22,14 @@ def load_hdf5(
     """Load all the contents of .hdf5 file at once.
     
     Args:
-        path (str) ... Path to the .hdf5 file.
-        key_dtype_pairs (list of tuple) ... A triplet, or list of triplets of \\
+        path (str): Path to the .hdf5 file.
+        key_dtype_pairs (list of tuple): A triplet, or list of triplets of \\
             (key of the return dictionary, key of the hdf5 file data, data type for numpy).\\
-            For example,\\
+            For example,
             [("ts", "raw_events/ts", np.int32), ("x", "raw_events/x", np.int16), ...]
 
     Returns:
-        dict ... {key of the return dictionary: np.ndarray}
+        dict: {key of the return dictionary: np.ndarray}
     """
     if isinstance(key_dtype_pairs, tuple):
         key_dtype_pairs = [key_dtype_pairs]  # make it list.
@@ -43,7 +43,7 @@ def open_hdf5(path: str) -> Any:
     """Open .hdf5 file, not to load them at once.
     
     Args:
-        path (str) ... Path to the .hdf5 file.
+        path (str): Path to the .hdf5 file.
 
     Returns:
         (Any) opened hdf5 object.
@@ -57,8 +57,8 @@ def load_event_timestamp_hdf5(
     """For utility: load only timestamps from the hdf5 data.
     
     Args:
-        path (str) ... Path to the .hdf5 file.
-        key_pairs  ... The tuple of \\
+        path (str): Path to the .hdf5 file.
+        key_pairs : The tuple of \\
             (key of the return dictionary, key of the hdf5 file data)
     
     Returns:
@@ -72,6 +72,12 @@ def load_event_timestamp_hdf5(
 
 
 def hdf5append(data: Any, new_arr: np.ndarray) -> None:
+    """For utility: append an array to hdf5 data.
+
+    Args:
+        data (Any): _description_
+        new_arr (np.ndarray): _description_
+    """
     n_old = data.shape[0]
     n_new = n_old + len(new_arr)
     data.resize(n_new, axis=0)

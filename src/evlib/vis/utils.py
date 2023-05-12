@@ -1,4 +1,5 @@
-import glob
+"""Utility functions for coloring, loading, etc.
+"""
 import logging
 import os
 from typing import Any, Dict, List, Optional, Tuple
@@ -17,7 +18,7 @@ def load_image(image: Any) -> Image.Image:
 
     Args:
         image (str or np.ndarray): If it is str, open and load the image.
-        If it is numpy array, it converts to PIL.Image.
+            If it is numpy array, it converts to PIL.Image.
 
     Returns:
         Image.Image: PIl Image object.
@@ -32,12 +33,13 @@ def load_image(image: Any) -> Image.Image:
 def color_depth_with_nan(
     depth: np.ndarray, min_depth: float, max_depth: float, fillnan: float
 ) -> np.ndarray:
-    """Color depth image even with nan values.
-    The nan will be padded with `fillnan` value.
+    """Color depth image even with nan values. The nan will be padded with `fillnan` value.
+
     Args:
-        depth (np.ndarray) ... [1, H, W]?
+        depth (np.ndarray): [1, H, W]?
+
     Returns:
-        (np.ndarray) ... [H, W, 3]?
+        [H, W, 3] colored depth arrat.
     """
     depth[np.isnan(depth)] = fillnan
     return color_depth(depth, min_depth, max_depth)
@@ -45,10 +47,12 @@ def color_depth_with_nan(
 
 def color_depth(depth: np.ndarray, min_depth: float, max_depth: float) -> np.ndarray:
     """Color depth image.
+    
     Args:
-        depth (np.ndarray) ... [1, H, W]?  # TODO test and check
+        depth (np.ndarray): [1, H, W]?  # TODO test and check
+
     Returns:
-        (np.ndarray) ... [H, W, 3]?
+        [H, W, 3] colored depth array.
     """
     depth = np.clip(depth, min_depth, max_depth)
     depth_relative = (depth - min_depth) / (max_depth - min_depth)
@@ -63,16 +67,17 @@ def color_optical_flow(
     ord:float=1.0
 ) -> Tuple[np.ndarray, np.ndarray, float]:
     """Color optical flow.
+    
     Args:
-        flow_v (numpy.ndarray) ... [H x W], vertical direction.
-        flow_h (numpy.ndarray) ... [H x W], horizontal direction.
-        max_magnitude (float, optional) ... Max magnitude used for the colorization. Defaults to None.
-        ord (float) ... 1: our usual, 0.5: DSEC colorinzing.
+        flow_v (numpy.ndarray): [H x W], vertical direction.
+        flow_h (numpy.ndarray): [H x W], horizontal direction.
+        max_magnitude (float, optional): Max magnitude used for the colorization. Defaults to None.
+        ord (float): 1: our usual, 0.5: DSEC colorinzing.
 
     Returns:
-        flow_rgb (np.ndarray) ... [W, H, 3]
-        color_wheel (np.ndarray) ... [H, H, 3] color wheel
-        max_magnitude (float) ... max magnitude of the flow.
+        flow_rgb (np.ndarray): [W, H, 3]
+        color_wheel (np.ndarray): [H, H, 3] color wheel
+        max_magnitude (float): max magnitude of the flow.
     """
     imshape = flow_h.shape
     flows = np.stack((flow_v, flow_h), axis=2)

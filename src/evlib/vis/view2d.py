@@ -1,3 +1,5 @@
+"""2-D visualization of various quantities.
+"""
 import glob
 import logging
 import os
@@ -54,15 +56,16 @@ def optical_flow(
     ord: float = 0.5,
 ) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Visualize optical flow.
+    
     Args:
-        flow_v (numpy.ndarray) ... [H x W], vertical direction.
-        flow_h (numpy.ndarray) ... [H x W], horizontal direction.
-        visualize_color_wheel (bool) ... If True, it also visualizes the color wheel (legend for OF).
+        flow_v (numpy.ndarray): [H x W], vertical direction.
+        flow_h (numpy.ndarray): [H x W], horizontal direction.
+        visualize_color_wheel (bool): If True, it also visualizes the color wheel (legend for OF).
         file_prefix (Optional[str], optional): [description]. Defaults to None.
             If specified, the save location will be `save_dir/{prefix}_{unique}.png`.
 
     Returns:
-        image (PIL.Image) ... PIL image.
+        image (PIL.Image): PIL image.
     """
     flow_rgb, color_wheel, _ = utils.color_optical_flow(flow_v, flow_h, ord=ord)
     image = Image.fromarray(flow_rgb)

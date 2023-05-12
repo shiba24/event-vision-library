@@ -1,4 +1,5 @@
-
+"""Hot-pixel removal filters.
+"""
 import numpy as np
 import torch
 
@@ -7,7 +8,8 @@ from ..types import NUMPY_TORCH
 
 
 def hot_pixel_filter(events: NUMPY_TORCH, image_shape: tuple, hot_pixel: int = 10) -> NUMPY_TORCH:
-    """
+    """Apply hot-pixel removal, a speed-optimized implementation.
+        The filtering is for a single batch of events, not multiple or asynchronous.
 
     Args:
         events (NUMPY_TORCH): [N, 4]

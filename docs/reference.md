@@ -11,8 +11,10 @@ The library consists of several sub modules.
    :recursive:
 
    evlib.codec
-   evlib.representation
-   evlib.utils
    evlib.types
+   evlib.utils
+   evlib.vis
+   evlib.representation
+   evlib.preproc
 ```
 

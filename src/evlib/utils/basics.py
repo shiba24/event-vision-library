@@ -12,15 +12,15 @@ def generate_events(
     """Generate random events.
 
     Args:
-        n_events (int) ... num of events
-        height (int) ... height of the camera
-        width (int) ... width of the camera
-        tmin (float) ... timestamp min
-        tmax (float) ... timestamp max
-        dist (str) ... distribution of generated events. currently only "uniform" is supported.
+        n_events (int): num of events
+        height (int): height of the camera
+        width (int): width of the camera
+        tmin (float): timestamp min
+        tmax (float): timestamp max
+        dist (str): distribution of generated events. currently only "uniform" is supported.
 
     Returns:
-        events (np.ndarray) ... [n_events x 4] numpy array.
+        events (np.ndarray): [n_events x 4] numpy array.
             (y (height), x (width), t: [tmin, tmax], p: {0, 1})
     """
     if dist != "uniform":
@@ -38,11 +38,11 @@ def generate_random_optical_flow(image_size: tuple, max_val: float) -> np.ndarra
     """Generate random optical flow.
 
     Args:
-        image_size (tuple) ... (H, W)
-        max_val (float) ... max value 
+        image_size (tuple): (H, W)
+        max_val (float): max value 
 
     Returns:
-        flow (np.ndarray) ... [2 x H x W] array.
+        flow (np.ndarray): [2 x H x W] array.
     """
     flow = np.random.uniform(-max_val, max_val, (2,) + image_size)
     return flow
@@ -52,12 +52,12 @@ def generate_uniform_optical_flow(image_size: tuple, vertical: float, horizontal
     """Generate uniform optical flow.
 
     Args:
-        image_size (tuple) ... (H, W)
-        vertical (float) ... vertical direction component
-        horizontal (float) ... horizontal direction component
+        image_size (tuple): (H, W)
+        vertical (float): vertical direction component
+        horizontal (float): horizontal direction component
 
     Returns:
-        flow (np.ndarray) ... [2 x H x W] array.
+        flow (np.ndarray): [2 x H x W] array.
     """
     flow = np.ones((2,) + image_size) * np.array([vertical, horizontal])[:, None, None]
     return flow # type: ignore

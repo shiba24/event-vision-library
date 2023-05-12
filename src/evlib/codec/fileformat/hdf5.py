@@ -20,11 +20,12 @@ def load_hdf5(
     path: str, key_dtype_pairs: Union[List[H5_SET], H5_SET]
 ) -> Dict[str, np.ndarray]:
     """Load all the contents of .hdf5 file at once.
+    
     Args:
         path (str) ... Path to the .hdf5 file.
-        key_dtype_pairs (list of tuple) ... A triplet, or list of triplets of
-            (key of the return dictionary, key of the hdf5 file data, data type for numpy).
-            For example,
+        key_dtype_pairs (list of tuple) ... A triplet, or list of triplets of \\
+            (key of the return dictionary, key of the hdf5 file data, data type for numpy).\\
+            For example,\\
             [("ts", "raw_events/ts", np.int32), ("x", "raw_events/x", np.int16), ...]
 
     Returns:
@@ -40,6 +41,7 @@ def load_hdf5(
 
 def open_hdf5(path: str) -> Any:
     """Open .hdf5 file, not to load them at once.
+    
     Args:
         path (str) ... Path to the .hdf5 file.
 
@@ -53,9 +55,10 @@ def load_event_timestamp_hdf5(
     path: str, key_pairs: Tuple[str, str], dtype: type = np.int32
 ) -> Dict[str, np.ndarray]:
     """For utility: load only timestamps from the hdf5 data.
+    
     Args:
         path (str) ... Path to the .hdf5 file.
-        key_pairs  ... The tuple of
+        key_pairs  ... The tuple of \\
             (key of the return dictionary, key of the hdf5 file data)
     
     Returns:

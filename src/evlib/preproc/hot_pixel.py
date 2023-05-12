@@ -13,6 +13,8 @@ def hot_pixel_filter(events: NUMPY_TORCH, image_shape: tuple, hot_pixel: int = 1
 
     Args:
         events (NUMPY_TORCH): [N, 4]
+        image_shape (tuple): tuple of (H, W).
+        hot_pixel (int): threshold of hot pixels.
 
     Returns:
         NUMPY_TORCH: Filered events

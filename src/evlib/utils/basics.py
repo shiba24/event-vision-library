@@ -32,3 +32,32 @@ def generate_events(
     p = np.random.randint(0, 2, n_events)
     events: np.ndarray = np.concatenate([y[..., None], x[..., None], t[..., None], p[..., None]], axis=1)
     return events
+
+
+def generate_random_optical_flow(image_size: tuple, max_val: float) -> np.ndarray:
+    """Generate random optical flow.
+
+    Args:
+        image_size (tuple) ... (H, W)
+        max_val (float) ... max value 
+
+    Returns:
+        flow (np.ndarray) ... [2 x H x W] array.
+    """
+    flow = np.random.uniform(-max_val, max_val, (2,) + image_size)
+    return flow
+
+
+def generate_uniform_optical_flow(image_size: tuple, vertical: float, horizontal: float) -> np.ndarray:
+    """Generate uniform optical flow.
+
+    Args:
+        image_size (tuple) ... (H, W)
+        vertical (float) ... vertical direction component
+        horizontal (float) ... horizontal direction component
+
+    Returns:
+        flow (np.ndarray) ... [2 x H x W] array.
+    """
+    flow = np.ones((2,) + image_size) * np.array([vertical, horizontal])[:, None, None]
+    return flow # type: ignore

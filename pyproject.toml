@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "event-vision-library"
-version = "0.0.0b"
+version = "0.0.1"
 description = "Event Vision Library"
 authors = ["Shintaro Shiba <shiba.shintaro@gmail.com>", "Friedhelm Hamann <friedhelmha2@gmail.com>"]
 maintainers = [

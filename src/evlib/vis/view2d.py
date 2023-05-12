@@ -1,7 +1,7 @@
 import glob
 import logging
 import os
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -48,15 +48,15 @@ def depth(depth: np.ndarray) -> Image.Image:
 
 
 def optical_flow(
-    flow_x: np.ndarray,
-    flow_y: np.ndarray,
+    flow_v: np.ndarray,
+    flow_h: np.ndarray,
     visualize_color_wheel: bool = True,
     ord: float = 0.5,
-):
+) -> Tuple[np.ndarray, Optional[np.ndarray]]:
     """Visualize optical flow.
     Args:
-        flow_x (numpy.ndarray) ... [H x W], height direction.
-        flow_y (numpy.ndarray) ... [H x W], width direction.
+        flow_v (numpy.ndarray) ... [H x W], vertical direction.
+        flow_h (numpy.ndarray) ... [H x W], horizontal direction.
         visualize_color_wheel (bool) ... If True, it also visualizes the color wheel (legend for OF).
         file_prefix (Optional[str], optional): [description]. Defaults to None.
             If specified, the save location will be `save_dir/{prefix}_{unique}.png`.
@@ -64,7 +64,7 @@ def optical_flow(
     Returns:
         image (PIL.Image) ... PIL image.
     """
-    flow_rgb, color_wheel, _ = utils.color_optical_flow(flow_x, flow_y, ord=ord)
+    flow_rgb, color_wheel, _ = utils.color_optical_flow(flow_v, flow_h, ord=ord)
     image = Image.fromarray(flow_rgb)
 
     if visualize_color_wheel:
@@ -72,5 +72,3 @@ def optical_flow(
     else:
         wheel = None
     return image, wheel
-
-

@@ -21,10 +21,19 @@
 [pre-commit]: https://github.com/pre-commit/pre-commit
 [black]: https://github.com/psf/black
 
+## Installation
+
+You can install _Event Vision Library_ via [pip] from [PyPI]:
+
+```console
+$ pip install event-vision-library
+```
+
 ## Features
 
 - Python 3.7, 3.8, 3.9, 3.10
 - Pure-python library
+- Numpy and Torch compatibility.
 - 🚧 This library is under construction and currently alpha version. The APIs may change significantly. Contributions and discussions are welcomed! 🚧
 
 ### Data
@@ -48,17 +57,9 @@
 - [ ] Various visualization for 2D/3D representation of events
 - [ ] Useful logging
 
-## Installation
-
-You can install _Event Vision Library_ via [pip] from [PyPI]:
-
-```console
-$ pip install event-vision-library
-```
-
 ## Usage
 
-Please see our examples and documentations.
+Please see our examples and [documentation][read the docs].
 
 ## Contributing
 

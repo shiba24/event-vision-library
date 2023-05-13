@@ -16,7 +16,7 @@ packages = [
     { include = "evlib", from = "src" },
 ]
 classifiers = [
-    "Development Status :: 2 - Pre-Alpha",
+    "Development Status :: 3 - Alpha",
 ]
 
 [tool.poetry.urls]

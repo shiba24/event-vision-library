@@ -59,7 +59,7 @@ $ pip install event-vision-library
 
 ## Usage
 
-Please see our examples and [documentation][read the docs].
+Please see our [examples] and [documentation][read the docs].
 
 ## Contributing
 
@@ -87,6 +87,7 @@ This project was generated from [Hypermodern Python Cookiecutter] template.
 
 <!-- github-only -->
 
+[examples]: https://github.com/shiba24/event-vision-library/blob/main/examples
 [license]: https://github.com/shiba24/event-vision-library/blob/main/LICENSE
 [contributor guide]: https://github.com/shiba24/event-vision-library/blob/main/CONTRIBUTING.md
 [command-line reference]: https://event-vision-library.readthedocs.io/en/latest/usage.html

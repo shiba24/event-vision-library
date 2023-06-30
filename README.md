@@ -27,6 +27,8 @@ You can install _Event Vision Library_ via [pip] from [PyPI]:
 
 ```console
 $ pip install event-vision-library
+
+# you can now `import evlib`
 ```
 
 ## Features

@@ -31,6 +31,10 @@ $ pip install event-vision-library
 # you can now `import evlib`
 ```
 
+## Usage
+
+Please see our [examples] and [documentation][read the docs].
+
 ## Features
 
 - Python 3.7, 3.8, 3.9, 3.10
@@ -58,10 +62,6 @@ $ pip install event-vision-library
 
 - [ ] Various visualization for 2D/3D representation of events
 - [ ] Useful logging
-
-## Usage
-
-Please see our [examples] and [documentation][read the docs].
 
 ## Contributing
 

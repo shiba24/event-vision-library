@@ -75,3 +75,28 @@ def optical_flow(
     else:
         wheel = None
     return image, wheel
+
+
+def events(events: np.ndarray, image_shape: tuple) -> Image.Image:
+    """Visualize events with polarity color.
+
+    Args:
+        events (np.ndarray): _description_
+        image_shape (tuple): _description_
+
+    Returns:
+        _type_: _description_
+    """
+    background_color = 255
+    image = (
+        np.ones((image_shape[0], image_shape[1], 3), dtype=np.uint8)
+        * background_color
+    )  # RGBA channel
+
+    events[:, 0] = np.clip(events[:, 0], 0, image_shape[0] - 1)
+    events[:, 1] = np.clip(events[:, 1], 0, image_shape[1] - 1)
+    colors = np.array([(255, 0, 0) if e[3] == 1 else (0, 0, 255) for e in events])
+    image[events[:, 0].astype(np.int32), events[:, 1].astype(np.int32), :] = colors
+
+    image = Image.fromarray(image)
+    return image

@@ -436,12 +436,12 @@ files = [
 
 [[package]]
 name = "dv"
-version = "1.0.11"
+version = "1.0.12"
 description = "Library to connect to DV event based vision software"
 optional = false
 python-versions = ">=3"
 files = [
-    {file = "dv-1.0.11.tar.gz", hash = "sha256:7b47d75002159f2a00564ed3107ebf476744f4305f9ea8985fd3e12eee0b7a10"},
+    {file = "dv-1.0.12.tar.gz", hash = "sha256:7974f5eab1b655bfdcde15549a23ef2c0726d6994bfbf0174540ce953f0ec83a"},
 ]
 
 [package.dependencies]

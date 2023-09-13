@@ -49,6 +49,8 @@ Install the package with development requirements:
 $ poetry install
 ```
 
+_Note: to install the dependencies in an already existing virtual environment, activate the environment and run the commands._
+
 You can now run an interactive Python session,
 or the command-line interface:
 

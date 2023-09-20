@@ -33,14 +33,14 @@ class IteratorBin(IteratorAccess):
         self.count = 0
         return self
 
-    def _init_vars_(self):
+    def _init_vars_(self) -> None:
         # Read event file
         self.raw_evs = self.read_ev_file()
         # Estimate width and height of sensor given the events in the stream
         self.size_x = self.raw_evs[:, 0].max() + 1
         self.size_y = self.raw_evs[:, 1].max() + 1
 
-    def read_ev_file(self):
+    def read_ev_file(self) -> np.ndarray:
         # From https://github.com/gorchard/event-Python/blob/master/eventvision.py#L532
         raw_data = np.fromfile(self.file, dtype=np.uint8)
         self.file.close()
@@ -49,7 +49,8 @@ class IteratorBin(IteratorAccess):
         return raw_evs
 
     @staticmethod
-    def _transform_raw_to_evs_(raw_data):
+    # Andreu: Add the return type and the ingestion type
+    def _transform_raw_to_evs_(raw_data: np.ndarray) -> np.ndarray:
         all_y = raw_data[1::5]
         all_x = raw_data[0::5]
         all_p = (raw_data[2::5] & 128) >> 7  # bit 7

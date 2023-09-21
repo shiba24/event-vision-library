@@ -35,6 +35,3 @@ for iter_data in ev_iter:
 
         t_current += t_window
         i += 1
-
-    # TODO: When using a for loop the event iterator stays in an infinite loop
-    break

@@ -42,6 +42,7 @@ class IteratorBin(IteratorAccess):
 
     def read_ev_file(self) -> np.ndarray:
         # From https://github.com/gorchard/event-Python/blob/master/eventvision.py#L532
+        # Change np.fromfile() to use "offset" if needed for future datasets
         raw_data = np.fromfile(self.file, dtype=np.uint8)
         self.file.close()
         raw_data = np.uint32(raw_data)
@@ -49,7 +50,6 @@ class IteratorBin(IteratorAccess):
         return raw_evs
 
     @staticmethod
-    # Andreu: Add the return type and the ingestion type
     def _transform_raw_to_evs_(raw_data: np.ndarray) -> np.ndarray:
         all_y = raw_data[1::5]
         all_x = raw_data[0::5]
@@ -82,6 +82,10 @@ class IteratorBinEvent(IteratorBin):
         """
         raw_evs = self.raw_evs
         _l = len(raw_evs)
+
+        # As we are reading the whole file at once this works. Re-check if we decide to go for chunk reading.
+        if self.count > _l:
+            raise StopIteration
 
         x = raw_evs[:, 0].astype(np.int32)
         y = raw_evs[:, 1].astype(np.int32)

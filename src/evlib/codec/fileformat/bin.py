@@ -23,13 +23,12 @@ class IteratorBin(IteratorAccess):
         # TODO add parse format option
         super().__init__(binfile)
         # Variables
-        self.raw_evs = None
-        self.size_x = None
-        self.size_y = None
+        self.raw_evs = np.zeros((4, 1))
+        self.size_x = 0
+        self.size_y = 0
         # Initialize variables
-        if binfile is not None:
-            self.file = open(self.file_name, 'rb')
-            self._init_vars_()
+        self.file = open(self.file_name, 'rb')
+        self._init_vars_()
 
     def __iter__(self) -> Any:
         self.count = 0

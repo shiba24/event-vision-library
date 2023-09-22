@@ -23,11 +23,13 @@ class IteratorBin(IteratorAccess):
         # TODO add parse format option
         super().__init__(binfile)
         # Variables
+        self.raw_evs = None
         self.size_x = None
         self.size_y = None
         # Initialize variables
-        self.file = open(self.file_name, 'rb')
-        self._init_vars_()
+        if binfile is not None:
+            self.file = open(self.file_name, 'rb')
+            self._init_vars_()
 
     def __iter__(self) -> Any:
         self.count = 0
@@ -84,7 +86,7 @@ class IteratorBinEvent(IteratorBin):
         _l = len(raw_evs)
 
         # As we are reading the whole file at once this works. Re-check if we decide to go for chunk reading.
-        if self.count > _l:
+        if self.count >= _l:
             raise StopIteration
 
         x = raw_evs[:, 0].astype(np.int32)

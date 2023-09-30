@@ -117,7 +117,7 @@ class IteratorTextFrame(IteratorText):
 
 
 class IteratorTextTimestamps(IteratorText):
-    def __next__(self):
+    def __next__(self) -> Dict[str, Any]:
         """
         Returns:
             dict: {"t"}

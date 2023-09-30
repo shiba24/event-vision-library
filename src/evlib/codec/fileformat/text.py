@@ -26,6 +26,7 @@ class IteratorText(IteratorAccess):
         # TODO add parse format option
         super().__init__(textfile)
         self.file = open(self.file_name)
+        self._ignore_characters = ["#", "//"]
 
     def __iter__(self) -> Any:
         self.count = 0

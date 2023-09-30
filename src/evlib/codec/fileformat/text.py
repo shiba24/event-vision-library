@@ -26,6 +26,7 @@ class IteratorText(IteratorAccess):
         # TODO add parse format option
         super().__init__(textfile)
         self.file = open(self.file_name)
+        self._ignore_characters = ["#", "//"]
 
     def __iter__(self) -> Any:
         self.count = 0
@@ -113,3 +114,23 @@ class IteratorTextFrame(IteratorText):
         image_timestamps = np.array(image_timestamp)
         images = np.array(image_list)
         return {"frame": images, "t": image_timestamps, "num": _l}
+
+
+class IteratorTextTimestamps(IteratorText):
+    def __next__(self) -> Dict[str, Any]:
+        """
+        Returns:
+            dict: {"t"}
+        """
+        lines = self.read_next_lines()
+        _l_ignore = 0
+        _l = len(lines)
+        t = np.zeros((_l,), dtype=np.float64)
+        for _i, line in enumerate(lines):
+            if line[0] in self._ignore_characters:
+                _l_ignore += 1
+                continue
+            t[_i - _l_ignore] = np.float64(line)
+        _l = len(lines) - _l_ignore
+        self.count += _l
+        return {"t": t[:_l], "num": _l}

@@ -13,4 +13,5 @@ from .text import IteratorTextEvent
 from .text import IteratorTextFrame
 from .text import IteratorTextImu
 from .text import IteratorTextPose
+from .text import IteratorTextTimestamps
 from .bin import IteratorBinEvent

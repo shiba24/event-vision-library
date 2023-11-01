@@ -989,12 +989,12 @@ typing-extensions = {version = "*", markers = "python_version < \"3.8\""}
 
 [[package]]
 name = "lit"
-version = "16.0.5"
+version = "17.0.3"
 description = "A Software Testing Tool"
 optional = false
 python-versions = "*"
 files = [
-    {file = "lit-16.0.5.tar.gz", hash = "sha256:40b0224271f7832991874a6285e13da343963110f0d7c9c6e1e53f3ace901dc0"},
+    {file = "lit-17.0.3.tar.gz", hash = "sha256:e6049032462be1e2928686cbd4a6cc5b3c545d83ecd078737fe79412c1f3fcc1"},
 ]
 
 [[package]]

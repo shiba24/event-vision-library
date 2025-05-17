@@ -23,20 +23,27 @@ classifiers = [
 Changelog = "https://github.com/shiba24/event-vision-library/releases"
 
 [tool.poetry.dependencies]
-python = "^3.7,<3.11"
+python = "^3.7,<3.12"
 click = ">=8.0.1"
+setuptools = [
+    {version = ">=79.0.0", python = ">=3.9,<3.12"},
+    {version = "<68.0", python = "==3.7"},
+]
 wheel = ">=0.38.4"
-numpy = ">=1.21.2"
+numpy = [
+    {version = ">=1.26.4,<2.0", python = ">=3.9,<3.12"},
+    {version = ">=1.24.0", python = "==3.8"}
+]
 h5py = ">=3.2"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
 opencv-python = ">=4.6"
 scipy = [
-    {version = ">=1.9.1", python = ">=3.8,<3.11"},
+    {version = ">=1.9.1", python = ">=3.8,<3.12"},
     {version = "<=1.9.1", python = "==3.7"}
 ]  # TODO check newer version of scipy
 torch = [
-    {version = ">=2.0.0", python = ">=3.8,<3.11"},
+    {version = ">=2.0.0", python = ">=3.8,<3.12"},
     {version = "<=2.0.0", python = "==3.7"}
 ]  # TODO check newer version of torch
 # check https://github.com/python-poetry/poetry/issues/6409 and https://github.com/pytorch/pytorch/issues/76557
@@ -73,6 +80,9 @@ event-vision-library = "evlib.__main__:main"
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 tests = ["tests", "*/tests"]
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [tool.coverage.run]
 branch = true

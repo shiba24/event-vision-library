@@ -45,6 +45,7 @@ jobs:
       - name: Upgrade pip
         run: |
           pip install --constraint=.github/workflows/constraints.txt pip
+          pip install pip -U
           pip --version
 
       - name: Upgrade pip in virtual environments
@@ -60,6 +61,7 @@ jobs:
         run: |
           pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
           poetry --version
+          poetry install
 
       - name: Install Nox
         run: |
@@ -130,6 +132,7 @@ jobs:
         run: |
           pipx install --pip-args=--constraint=.github/workflows/constraints.txt poetry
           poetry --version
+          poetry install
 
       - name: Install Nox
         run: |

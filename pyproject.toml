@@ -27,7 +27,7 @@ python = "^3.9,<3.12"
 click = ">=8.0.1"
 setuptools = ">=79.0.0"
 wheel = ">=0.38.4"
-numpy = ">=1.21.2"
+numpy = ">=1.26.4,<2.0"
 h5py = ">=3.2"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
@@ -74,6 +74,9 @@ event-vision-library = "evlib.__main__:main"
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 tests = ["tests", "*/tests"]
+
+[tool.poetry.requires-plugins]
+poetry-plugin-export = ">=1.8"
 
 [tool.coverage.run]
 branch = true

@@ -23,7 +23,7 @@ classifiers = [
 Changelog = "https://github.com/shiba24/event-vision-library/releases"
 
 [tool.poetry.dependencies]
-python = "^3.8,<3.12"
+python = "^3.9,<3.12"
 click = ">=8.0.1"
 setuptools = ">=79.0.0"
 wheel = ">=0.38.4"
@@ -33,11 +33,11 @@ expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
 opencv-python = ">=4.6"
 scipy = [
-    {version = ">=1.9.1", python = ">=3.8,<3.12"},
+    {version = ">=1.9.1", python = ">=3.9,<3.12"},
     {version = "<=1.9.1", python = "==3.7"}
 ]  # TODO check newer version of scipy
 torch = [
-    {version = ">=2.0.0", python = ">=3.8,<3.12"},
+    {version = ">=2.0.0", python = ">=3.9,<3.12"},
     {version = "<=2.0.0", python = "==3.7"}
 ]  # TODO check newer version of torch
 # check https://github.com/python-poetry/poetry/issues/6409 and https://github.com/pytorch/pytorch/issues/76557

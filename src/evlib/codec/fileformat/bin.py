@@ -46,8 +46,8 @@ class IteratorBin(IteratorAccess):
         # Change np.fromfile() to use "offset" if needed for future datasets
         raw_data = np.fromfile(self.file, dtype=np.uint8)
         self.file.close()
-        raw_data = np.uint32(raw_data)
-        raw_evs = self._transform_raw_to_evs_(raw_data)  # type: ignore
+        raw_data = np.uint32(raw_data)  # type: ignore
+        raw_evs = self._transform_raw_to_evs_(raw_data)
         return raw_evs
 
     @staticmethod

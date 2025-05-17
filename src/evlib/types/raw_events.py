@@ -12,8 +12,8 @@ from .raw_event import RawEvent
 @dataclass
 class RawEvents:
     """Dataclass for a batch of raw events."""
-    x: npt.NDArray[np.int16]  # [0, width]
-    y: npt.NDArray[np.int16]  # [0, height]
+    x: npt.NDArray[np.int16] | npt.NDArray[np.int32]  # [0, width]
+    y: npt.NDArray[np.int16] | npt.NDArray[np.int32]  # [0, height]
     timestamp: npt.NDArray[np.float64]
     polarity: npt.NDArray[np.bool_]   # true for positive, false for negative
 

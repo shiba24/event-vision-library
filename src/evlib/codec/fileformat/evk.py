@@ -26,7 +26,7 @@ class IteratorEvk3(IteratorAccess):
         self.count = 0
 
     def __next__(self) -> Dict[str, Any]:
-        chunk = next(self.wizard.read_chunk())  # type: ignore        
+        chunk = next(self.wizard.read_chunk())
         _l = len(chunk)
         x = np.zeros((_l,), dtype=np.int32)
         y = np.zeros((_l,), dtype=np.int32)
@@ -38,4 +38,4 @@ class IteratorEvk3(IteratorAccess):
             y[_i] = int(e[2])
             p[_i] = int(e[3])
         self.count += _l
-        return RawEvents(x=x, y=y, timestamp=t, polarity=p)
+        return RawEvents(x=x, y=y, timestamp=t, polarity=p)  # type: ignore

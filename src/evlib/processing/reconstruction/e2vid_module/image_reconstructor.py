@@ -72,5 +72,5 @@ class ImageReconstructor:
                 out = reconstructions_for_each_channel['grayscale']
 
             # Post-processing, e.g bilateral filter (on CPU)
-            out = self.image_filter(out)
-        return out  # type: ignore
+            out = self.image_filter(out)  # type: ignore
+        return out

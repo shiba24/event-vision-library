@@ -136,8 +136,8 @@ class ImageFilter:
             # TODO check - this looks like returning numpy, not torch.
             filtered_img = np.zeros_like(img)
             filtered_img = cv2.bilateralFilter(
-                img, 5, 25.0 * self.bilateral_filter_sigma, 25.0 * self.bilateral_filter_sigma)
-            img = filtered_img  # type: ignore
+                img, 5, 25.0 * self.bilateral_filter_sigma, 25.0 * self.bilateral_filter_sigma)    # type: ignore
+            img = filtered_img
         return img
 
 

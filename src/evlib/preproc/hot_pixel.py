@@ -30,6 +30,6 @@ def hot_pixel_filter(events: NUMPY_TORCH, image_shape: tuple, hot_pixel: int = 1
         val, counts = torch.unique(pix_index, return_counts=True)
         dup_vals = val[counts > hot_pixel]  # the unique index for hot pixel locations
         hot_event_index = torch.isin(pix_index, dup_vals)  # type: ignore
-    filtered_event = events[~hot_event_index]  # type: ignore
+    filtered_event = events[~hot_event_index]
     return filtered_event
 

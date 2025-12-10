@@ -68,7 +68,7 @@ class E2VIDRecurrent(BaseE2VID):
                                            norm=self.norm,
                                            use_upsample_conv=self.use_upsample_conv)
 
-    def forward(self, event_tensor: torch.Tensor,  # type: ignore
+    def forward(self, event_tensor: torch.Tensor,
                 prev_states: Optional[List[torch.Tensor]]) -> Tuple[torch.Tensor,
                                                                     List[torch.Tensor]]:
         """

@@ -32,7 +32,7 @@ def image(image: Any) -> Image.Image:
         Image.Image: PIL Image object
     """
     image = utils.load_image(image)
-    return image
+    return image  # type: ignore
 
 
 def depth(depth: np.ndarray) -> Image.Image:
@@ -45,8 +45,8 @@ def depth(depth: np.ndarray) -> Image.Image:
         Image.Image: PIL Image object, depth
     """
     image = utils.color_depth_with_nan(depth, MIN_DEPTH, MAX_DEPTH, MAX_DEPTH)
-    image = Image.fromarray(image)
-    return image
+    image = Image.fromarray(image)  # type: ignore
+    return image  # type: ignore
 
 
 def optical_flow(
@@ -74,7 +74,7 @@ def optical_flow(
         wheel = Image.fromarray(color_wheel)
     else:
         wheel = None
-    return image, wheel
+    return image, wheel  # type: ignore
 
 
 def events(events: np.ndarray, image_shape: tuple) -> Image.Image:
@@ -98,5 +98,5 @@ def events(events: np.ndarray, image_shape: tuple) -> Image.Image:
     colors = np.array([(255, 0, 0) if e[3] == 1 else (0, 0, 255) for e in events])
     image[events[:, 0].astype(np.int32), events[:, 1].astype(np.int32), :] = colors
 
-    image = Image.fromarray(image)
-    return image
+    image = Image.fromarray(image)  # type: ignore
+    return image  # type: ignore

@@ -27,7 +27,7 @@ def load_image(image: Any) -> Image.Image:
         image = Image.open(image)
     elif type(image) == np.ndarray:
         image = Image.fromarray(image)
-    return image
+    return image  # type: ignore
 
 
 def color_depth_with_nan(
@@ -56,7 +56,7 @@ def color_depth(depth: np.ndarray, min_depth: float, max_depth: float) -> np.nda
     """
     depth = np.clip(depth, min_depth, max_depth)
     depth_relative = (depth - min_depth) / (max_depth - min_depth)
-    color_depth = (255 * plt.cm.viridis(depth_relative.astype(np.float32))[0, :, :, :3]).astype(np.uint8)
+    color_depth = (255 * plt.cm.viridis(depth_relative.astype(np.float32))[0, :, :, :3]).astype(np.uint8)    # type: ignore
     return color_depth  # type: ignore
 
 

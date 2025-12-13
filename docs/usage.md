@@ -6,12 +6,11 @@
 pip install event-vision-library
 ```
 
-The supported python versions are 3.7, 3.8. 3.9, 3.10.
-3.7 will be dropped in future.
+The supported python versions are 3.8. 3.9, 3.10, and 3.11.
 
 ## Examples
 
-We will soon release a set of example use-cases.
+In the github, we have [some examples](https://github.com/shiba24/event-vision-library/tree/main/examples)
 
 ## API References
 

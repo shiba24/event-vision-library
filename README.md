@@ -33,34 +33,34 @@ $ pip install event-vision-library
 
 ## Usage
 
-Please see our [examples] and [documentation][read the docs].
+Please see our [examples](https://github.com/shiba24/event-vision-library/tree/main/examples) and [documentation][read the docs].
 
 ## Features
 
-- Python 3.7, 3.8, 3.9, 3.10
+- Python 3.8, 3.9, 3.10, 3.11
 - Pure-python library
 - Numpy and Torch compatibility.
 - 🚧 This library is under construction and currently alpha version. The APIs may change significantly. Contributions and discussions are welcomed! 🚧
 
 ### Data
 
-- [ ] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
+- [✅] Support different data types (.text, .raw, .hdf5, .npy, .aedat) for various file encoding of event data
 - [ ] ROS bag files (optional, based on ROS installation)
 - [ ] Support multiple existing dataset (e.g., ECD, MVSEC, DSEC, etc.)
-- [ ] Support iterator-based loading and also block-based (random access) loading.
+- [✅] Support iterator-based loading and also block-based (random access) loading.
 
 ### Algorithms
 
 - Have different off-the-shelf methods, ready to use:
   - [ ] Optical Flow estimation
-  - [ ] Image reconstruction
+  - [✅] Image reconstruction
   - [ ] Ego-motion estimation
   - more to come.
 - [ ] C++ implementation and extension for faster execution (TODO)
 
 ### Log and Vsualization
 
-- [ ] Various visualization for 2D/3D representation of events
+- [✅] Various visualization for 2D/3D representation of events
 - [ ] Useful logging
 
 ## Contributing

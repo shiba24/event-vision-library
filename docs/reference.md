@@ -11,6 +11,8 @@ The library consists of several sub modules.
    :recursive:
 
    evlib.codec
+   evlib.dataloaders
+   evlib.datasets
    evlib.types
    evlib.utils
    evlib.vis

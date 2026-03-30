@@ -78,8 +78,8 @@ class TestDatasetBaseClasses:
 
     def test_abstract_base_cannot_be_instantiated(self) -> None:
         with pytest.raises(TypeError):
-            EventDataset()
+            EventDataset()  # type: ignore[abstract]
         with pytest.raises(TypeError):
-            BlockAccessDataset()
+            BlockAccessDataset()  # type: ignore[abstract]
         with pytest.raises(TypeError):
-            IteratorAccessDataset()
+            IteratorAccessDataset()  # type: ignore[abstract]

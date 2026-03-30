@@ -65,7 +65,7 @@ class _EmptyLoader(DataLoaderBase):
 class TestDataLoaderBase:
     def test_abstract_base_cannot_be_instantiated(self) -> None:
         with pytest.raises(TypeError):
-            DataLoaderBase()
+            DataLoaderBase()  # type: ignore[abstract]
 
     def test_context_manager_closes(self) -> None:
         loader = _DummyLoader()

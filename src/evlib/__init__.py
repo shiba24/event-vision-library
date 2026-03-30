@@ -9,7 +9,4 @@ Provides
   6. Visualization.
 """
 
-from .version import __version__  # type: ignore
-from .version import git_revision as __git_version__  # type: ignore
-from . import dataloaders
-from . import datasets
+from .version import __version__, git_revision as __git_version__  # type: ignore

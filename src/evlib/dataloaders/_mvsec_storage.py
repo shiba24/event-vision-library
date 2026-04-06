@@ -1,5 +1,7 @@
 """Private storage backends for MVSEC loader internals."""
 
+from __future__ import annotations
+
 import abc
 import hashlib
 import json

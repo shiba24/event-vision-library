@@ -11,6 +11,7 @@ import abc
 from typing import Any
 from typing import Iterator
 from typing import Optional
+from typing import Self
 from typing import Tuple
 
 import numpy as np
@@ -277,7 +278,7 @@ class DataLoaderBase(abc.ABC):
         last_event_time = self.index_to_time(last_event_index)
         return last_event_time
 
-    def __enter__(self) -> "DataLoaderBase":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *exc: Any) -> None:

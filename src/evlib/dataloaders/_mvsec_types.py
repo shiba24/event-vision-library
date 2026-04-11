@@ -1,4 +1,4 @@
-"""MVSEC specific container types."""
+"""MVSEC specific lightweight container types."""
 
 from dataclasses import dataclass
 
@@ -8,7 +8,7 @@ import numpy.typing as npt
 
 @dataclass(frozen=True)
 class MVSECOdometryData:
-    """MVSEC odometry samples loaded from ``*_odom.npz``."""
+    """Container for MVSEC odometry samples loaded from ``*_odom.npz``."""
 
     timestamps: npt.NDArray[np.float64]
     linear_velocity: npt.NDArray[np.float64]
@@ -17,5 +17,5 @@ class MVSECOdometryData:
     angular_velocity: npt.NDArray[np.float64]
 
     def __len__(self) -> int:
-        """Return the num of odometry samples."""
+        """Return the number of odometry samples."""
         return len(self.timestamps)

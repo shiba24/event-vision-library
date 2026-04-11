@@ -4,18 +4,17 @@ Reuses the same synthetic MVSEC format files as test_mvsec.py.
 """
 
 import pickle
+from pathlib import Path
 
 import h5py
 import numpy as np
-from pathlib import Path
-
 import pytest
 
 from evlib.dataloaders import MVSECOdometryData
 from evlib.dataloaders._base import DataLoaderBase
 from evlib.dataloaders._mvsec import MVSECDataLoader
-from evlib.dataloaders._mvsec import _find_nearest_index
 from evlib.dataloaders._mvsec import _resolve_load_mode
+from evlib.dataloaders.utils import find_nearest_index
 from evlib.types import RawEvents
 
 
@@ -238,20 +237,20 @@ class TestResidentLoadModes:
 class TestFindNearestIndex:
     def test_exact_match(self) -> None:
         ts = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        assert _find_nearest_index(ts, 3.0) == 2
+        assert find_nearest_index(ts, 3.0) == 2
 
     def test_between_values(self) -> None:
         ts = np.array([1.0, 2.0, 3.0, 4.0, 5.0])
-        assert _find_nearest_index(ts, 2.3) == 1
-        assert _find_nearest_index(ts, 2.7) == 2
+        assert find_nearest_index(ts, 2.3) == 1
+        assert find_nearest_index(ts, 2.7) == 2
 
     def test_before_start(self) -> None:
         ts = np.array([1.0, 2.0, 3.0])
-        assert _find_nearest_index(ts, 0.0) == 0
+        assert find_nearest_index(ts, 0.0) == 0
 
     def test_after_end(self) -> None:
         ts = np.array([1.0, 2.0, 3.0])
-        assert _find_nearest_index(ts, 99.0) == 2
+        assert find_nearest_index(ts, 99.0) == 2
 
 
 # Existing dataloader tests

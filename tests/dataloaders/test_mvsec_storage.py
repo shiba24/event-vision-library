@@ -8,30 +8,29 @@ import h5py
 import numpy as np
 import pytest
 
-from evlib.dataloaders._mvsec_storage import ResidentLoadMode
-from evlib.dataloaders._mvsec_storage import _build_event_cache
+from evlib.dataloaders._event_cache import _build_event_cache
+from evlib.dataloaders._event_cache import _CachedEventBackend
+from evlib.dataloaders._event_cache import _copy_event_rows_into_columns
+from evlib.dataloaders._event_cache import _event_cache_is_complete
+from evlib.dataloaders._event_cache import _freeze_event_columns
+from evlib.dataloaders._event_cache import _LazyEventBackend
+from evlib.dataloaders._event_cache import _load_event_cache_metadata
+from evlib.dataloaders._event_cache import _make_cache_signature
+from evlib.dataloaders._event_cache import _make_event_cache_dir
+from evlib.dataloaders._event_cache import _make_event_cache_paths
+from evlib.dataloaders._event_cache import _prepare_event_cache
+from evlib.dataloaders._event_cache import _write_json as _write_event_json
+from evlib.dataloaders._event_cache import load_cached_events
 from evlib.dataloaders._mvsec_storage import _build_gt_flow_cache
-from evlib.dataloaders._mvsec_storage import _CachedEventBackend
-from evlib.dataloaders._mvsec_storage import _copy_event_rows_into_columns
-from evlib.dataloaders._mvsec_storage import _event_cache_is_complete
-from evlib.dataloaders._mvsec_storage import _freeze_event_columns
 from evlib.dataloaders._mvsec_storage import _gt_flow_cache_is_complete
-from evlib.dataloaders._mvsec_storage import _LazyEventBackend
-from evlib.dataloaders._mvsec_storage import _LazyH5Dataset
-from evlib.dataloaders._mvsec_storage import _load_event_cache_metadata
 from evlib.dataloaders._mvsec_storage import _load_gt_flow_cache_metadata
-from evlib.dataloaders._mvsec_storage import _make_cache_signature
-from evlib.dataloaders._mvsec_storage import _make_event_cache_dir
-from evlib.dataloaders._mvsec_storage import _make_event_cache_paths
 from evlib.dataloaders._mvsec_storage import _make_gt_flow_cache_dir
 from evlib.dataloaders._mvsec_storage import _make_gt_flow_cache_paths
-from evlib.dataloaders._mvsec_storage import _prepare_event_cache
-from evlib.dataloaders._mvsec_storage import _write_json
-from evlib.dataloaders._mvsec_storage import load_mvsec_cached_events
+from evlib.dataloaders._mvsec_storage import _write_json as _write_gt_flow_json
 from evlib.dataloaders._mvsec_storage import load_mvsec_gt_flow
-from evlib.dataloaders._mvsec_storage import normalize_resident_load_mode
 from evlib.dataloaders._mvsec_storage import resolve_mvsec_cache_dir
-from evlib.types import RawEvents
+from evlib.dataloaders._storage_common import _LazyH5Dataset
+from evlib.dataloaders._storage_common import normalize_resident_load_mode
 
 
 N_EVENTS = 50
@@ -39,7 +38,7 @@ DATASET_KEY = "davis/left/events"
 
 
 def _make_hdf5(path: str, n_events: int = N_EVENTS) -> None:
-    """minimal MVSEC like HDF5 file."""
+    """Create a minimal MVSEC-like HDF5 file."""
     with h5py.File(path, "w") as f:
         events = np.zeros((n_events, 4), dtype=np.float64)
         events[:, 0] = np.arange(n_events) % 10  # x
@@ -115,7 +114,7 @@ class TestEventCachePaths:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_dir = _make_event_cache_dir(
-            str(tmp_path), hdf5_path, DATASET_KEY, "indoor_flying1", "left"
+            str(tmp_path), hdf5_path, DATASET_KEY, "indoor_flying1_left"
         )
         assert "indoor_flying1_left_" in cache_dir
 
@@ -147,7 +146,7 @@ class TestEventCacheMetadata:
             "num_events": 50,
         }
         path = str(tmp_path / "metadata.json")
-        _write_json(path, metadata)  # type: ignore[arg-type]
+        _write_event_json(path, metadata)  # type: ignore[arg-type]
         loaded = _load_event_cache_metadata(path)
         assert loaded == metadata
 
@@ -179,7 +178,7 @@ class TestEventCacheComplete:
             "source_mtime_ns": stat.st_mtime_ns,
             "num_events": N_EVENTS,
         }
-        _write_json(os.path.join(cache_dir, "metadata.json"), metadata)  # type: ignore[arg-type]
+        _write_event_json(os.path.join(cache_dir, "metadata.json"), metadata)  # type: ignore[arg-type]
         result = _event_cache_is_complete(cache_dir, hdf5_path, DATASET_KEY)
         assert result is None
 
@@ -199,7 +198,7 @@ class TestEventCacheComplete:
             "source_mtime_ns": 0,
             "num_events": N_EVENTS,
         }
-        _write_json(paths["metadata"], metadata)  # type: ignore[arg-type]
+        _write_event_json(paths["metadata"], metadata)  # type: ignore[arg-type]
         result = _event_cache_is_complete(cache_dir, hdf5_path, DATASET_KEY)
         assert result is None
 
@@ -223,7 +222,7 @@ class TestGTFlowCacheComplete:
             "source_size": stat.st_size,
             "source_mtime_ns": stat.st_mtime_ns,
         }
-        _write_json(os.path.join(cache_dir, "metadata.json"), metadata)  # type: ignore[arg-type]
+        _write_gt_flow_json(os.path.join(cache_dir, "metadata.json"), metadata)  # type: ignore[arg-type]
         result = _gt_flow_cache_is_complete(cache_dir, npz_path)
         assert result is None
 
@@ -241,7 +240,7 @@ class TestGTFlowCacheComplete:
             "source_size": 0,
             "source_mtime_ns": 0,
         }
-        _write_json(paths["metadata"], metadata)  # type: ignore[arg-type]
+        _write_gt_flow_json(paths["metadata"], metadata)  # type: ignore[arg-type]
         result = _gt_flow_cache_is_complete(cache_dir, npz_path)
         assert result is None
 
@@ -347,7 +346,7 @@ class TestBuildEventCacheTempDirExists:
 
         fake_uuid = mock.MagicMock()
         fake_uuid.hex = fake_hex
-        with mock.patch("evlib.dataloaders._mvsec_storage.uuid.uuid4", return_value=fake_uuid):
+        with mock.patch("evlib.dataloaders._event_cache.uuid.uuid4", return_value=fake_uuid):
             _build_event_cache(hdf5_path, DATASET_KEY, cache_dir)
 
         assert not os.path.isdir(temp_dir)
@@ -361,7 +360,7 @@ class TestBuildEventCacheEdgeCases:
         cache_dir = str(tmp_path / "event_cache_err")
 
         with mock.patch(
-            "evlib.dataloaders._mvsec_storage._copy_event_rows_into_columns",
+            "evlib.dataloaders._event_cache._copy_event_rows_into_columns",
             side_effect=IOError("boom"),
         ):
             with pytest.raises(IOError):
@@ -453,8 +452,9 @@ class TestPrepareEventCache:
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
 
-        _, paths1, meta1 = _prepare_event_cache(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
-        _, paths2, meta2 = _prepare_event_cache(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        cache_name = "seq1_left"
+        _, paths1, meta1 = _prepare_event_cache(hdf5_path, DATASET_KEY, cache_name, cache_root)
+        _, paths2, meta2 = _prepare_event_cache(hdf5_path, DATASET_KEY, cache_name, cache_root)
         assert meta1["num_events"] == meta2["num_events"]
         assert paths1 == paths2
 
@@ -465,7 +465,8 @@ class TestLoadMvsecCachedEvents:
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
 
-        x, y, ts, pol = load_mvsec_cached_events(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        cache_name = "seq1_left"
+        x, y, ts, pol = load_cached_events(hdf5_path, DATASET_KEY, cache_name, cache_root)
         assert len(x) == N_EVENTS
         assert not x.flags.writeable
         assert not ts.flags.writeable
@@ -523,10 +524,9 @@ class TestCachedEventBackend:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
+        cache_name = "seq1_left"
 
-        backend = _CachedEventBackend.from_sidecar(
-            hdf5_path, DATASET_KEY, "seq1", "left", cache_root
-        )
+        backend = _CachedEventBackend.from_sidecar(hdf5_path, DATASET_KEY, cache_name, cache_root)
         assert backend.num_events == N_EVENTS
 
     def test_time_and_index_methods(self, tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -560,8 +560,9 @@ class TestLazyEventBackend:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
+        cache_name = "seq1_left"
 
-        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, cache_name, cache_root)
         assert backend.num_events == N_EVENTS
         events = backend.load_events(0, 5)
         assert len(events) == 5
@@ -570,8 +571,9 @@ class TestLazyEventBackend:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
+        cache_name = "seq1_left"
 
-        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, cache_name, cache_root)
         idx = backend.time_to_index(0.5)
         t = backend.index_to_time(0)
         assert isinstance(idx, int)
@@ -587,8 +589,9 @@ class TestLazyEventBackend:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
+        cache_name = "seq1_left"
 
-        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, cache_name, cache_root)
         backend.load_events(0, 1)
         backend.close()
         assert backend._x is None
@@ -598,8 +601,9 @@ class TestLazyEventBackend:
         hdf5_path = str(tmp_path / "test.hdf5")
         _make_hdf5(hdf5_path)
         cache_root = str(tmp_path / "cache")
+        cache_name = "seq1_left"
 
-        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, "seq1", "left", cache_root)
+        backend = _LazyEventBackend(hdf5_path, DATASET_KEY, cache_name, cache_root)
         backend.load_events(0, 1)
         state = backend.__getstate__()
         assert state["_x"] is None

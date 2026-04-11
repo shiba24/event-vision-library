@@ -1,5 +1,3 @@
-"""Tests for MVSEC types."""
-
 import numpy as np
 
 from evlib.dataloaders._mvsec_types import MVSECOdometryData

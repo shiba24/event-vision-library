@@ -14,41 +14,37 @@ The Multi Vehicle Stereo Event Camera Dataset: An Event Camera Dataset for 3D Pe
 IEEE Robotics and Automation Letters, 3(3), 2032-2039.
 """
 
-from __future__ import annotations
-
 import concurrent.futures
 import logging
 import os
 import warnings
-from functools import lru_cache
-from typing import Any, Dict, Literal, Optional, Tuple, Union, cast
+from typing import Dict
+from typing import Literal
+from typing import Optional
+from typing import Tuple
+from typing import Union
+from typing import cast
 
 import h5py
 import numpy as np
 import numpy.typing as npt
 
-_cv2: Any = None
-
-try:
-    import cv2 as _cv2
-except ImportError:
-    _cv2 = None
-
-cv2: Any = _cv2
-
 from evlib.codec.fileformat.hdf5 import open_hdf5
 from evlib.types import RawEvents
 
 from ._base import DataLoaderBase
-from ._mvsec_storage import _CachedEventBackend
-from ._mvsec_storage import _EventBackend
-from ._mvsec_storage import _LazyEventBackend
-from ._mvsec_storage import _LazyH5Dataset
-from ._mvsec_storage import ResidentLoadMode
+from ._event_cache import _CachedEventBackend
+from ._event_cache import _EventBackend
+from ._event_cache import _LazyEventBackend
 from ._mvsec_storage import load_mvsec_gt_flow
-from ._mvsec_storage import normalize_resident_load_mode
 from ._mvsec_storage import resolve_mvsec_cache_dir
 from ._mvsec_types import MVSECOdometryData
+from ._storage_common import ResidentLoadMode
+from ._storage_common import _LazyH5Dataset
+from ._storage_common import normalize_resident_load_mode
+from .utils import find_nearest_index
+from .utils import get_flow_coordinate_grid
+from .utils import propagate_flow_step
 
 
 logger = logging.getLogger(__name__)
@@ -103,120 +99,6 @@ def _load_odometry_npz(npz_path: str) -> Optional[MVSECOdometryData]:
     )
 
 
-def _find_nearest_index(timestamps: npt.NDArray[np.float64], t: float) -> int:
-    """Index of the timestamp nearest to *t*."""
-    idx = int(np.searchsorted(timestamps, t, side="left"))
-
-    if idx >= len(timestamps):
-        return len(timestamps) - 1
-    if idx == 0:
-        return 0
-
-    left_dist = abs(t - timestamps[idx - 1])
-    right_dist = abs(t - timestamps[idx])
-    return idx - 1 if left_dist <= right_dist else idx
-
-
-@lru_cache(maxsize=8)
-def _get_flow_coordinate_grid(
-    h: int,
-    w: int,
-) -> Tuple[npt.NDArray[np.float32], npt.NDArray[np.float32]]:
-    """Cached base coordinate grids for dense flow propagation."""
-    xc, yc = np.meshgrid(
-        np.arange(w, dtype=np.float32),
-        np.arange(h, dtype=np.float32),
-        indexing="xy",
-    )
-    xc.flags.writeable = False
-    yc.flags.writeable = False
-    return xc, yc
-
-
-def _sample_flow_nearest_numpy(
-    x_flow: npt.NDArray[np.float32],
-    y_flow: npt.NDArray[np.float32],
-    x_coords: npt.NDArray[np.float32],
-    y_coords: npt.NDArray[np.float32],
-) -> Tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.bool_]]:
-    """Pure numpy fallback for nearest neighbor flow sampling."""
-    rx = np.rint(x_coords).astype(np.int32)
-    ry = np.rint(y_coords).astype(np.int32)
-
-    h, w = x_flow.shape
-    valid = (rx >= 0) & (rx < w) & (ry >= 0) & (ry < h)
-
-    sx = np.zeros_like(x_flow, dtype=np.float32)
-    sy = np.zeros_like(y_flow, dtype=np.float32)
-    if np.any(valid):
-        sx[valid] = x_flow[ry[valid], rx[valid]]
-        sy[valid] = y_flow[ry[valid], rx[valid]]
-
-    return sx, sy, valid
-
-
-def _sample_flow_nearest(
-    x_flow: npt.NDArray[np.float32],
-    y_flow: npt.NDArray[np.float32],
-    x_coords: npt.NDArray[np.float32],
-    y_coords: npt.NDArray[np.float32],
-) -> Tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.bool_]]:
-    """Sample dense flow at floating point coordinates, opencv if available."""
-    rx = np.rint(x_coords).astype(np.int32)
-    ry = np.rint(y_coords).astype(np.int32)
-
-    h, w = x_flow.shape
-    valid = (rx >= 0) & (rx < w) & (ry >= 0) & (ry < h)
-
-    if cv2 is None:
-        return _sample_flow_nearest_numpy(x_flow, y_flow, x_coords, y_coords)
-
-    sx = np.asarray(
-        cv2.remap(
-            x_flow,
-            x_coords,
-            y_coords,
-            interpolation=cv2.INTER_NEAREST,
-            borderMode=cv2.BORDER_CONSTANT,
-            borderValue=0,
-        ),
-        dtype=np.float32,
-    )
-    sy = np.asarray(
-        cv2.remap(
-            y_flow,
-            x_coords,
-            y_coords,
-            interpolation=cv2.INTER_NEAREST,
-            borderMode=cv2.BORDER_CONSTANT,
-            borderValue=0,
-        ),
-        dtype=np.float32,
-    )
-    return sx, sy, valid
-
-
-def _propagate_flow_step(
-    x_flow: npt.NDArray[np.float32],
-    y_flow: npt.NDArray[np.float32],
-    x_coords: npt.NDArray[np.float32],
-    y_coords: npt.NDArray[np.float32],
-    x_mask: npt.NDArray[np.bool_],
-    y_mask: npt.NDArray[np.bool_],
-    scale: float,
-) -> None:
-    """Propagate pixel coordinates through one GT flow field (in place)."""
-    sx, sy, valid = _sample_flow_nearest(x_flow, y_flow, x_coords, y_coords)
-
-    x_mask &= valid
-    y_mask &= valid
-    x_mask[sx == 0.0] = False
-    y_mask[sy == 0.0] = False
-
-    x_coords += sx * scale
-    y_coords += sy * scale
-
-
 def _estimate_interval_flow(
     x_flow_all: npt.NDArray[np.float32],
     y_flow_all: npt.NDArray[np.float32],
@@ -268,14 +150,14 @@ def _estimate_interval_flow(
     # slow path - walk pixel coords through multiple GT intervals
     # leading partial -> full middle intervals -> trailing partial
     h, w = x_flow_all.shape[1], x_flow_all.shape[2]
-    origin_x, origin_y = _get_flow_coordinate_grid(h, w)
+    origin_x, origin_y = get_flow_coordinate_grid(h, w)
     xc = origin_x.copy()
     yc = origin_y.copy()
     xm = np.ones((h, w), dtype=np.bool_)
     ym = np.ones((h, w), dtype=np.bool_)
 
     # leading partial
-    _propagate_flow_step(
+    propagate_flow_step(
         x_flow_all[start_idx],
         y_flow_all[start_idx],
         xc,
@@ -290,7 +172,7 @@ def _estimate_interval_flow(
     while i < last_flow_idx:
         if float(gt_timestamps[i + 1]) >= t_end:
             break
-        _propagate_flow_step(
+        propagate_flow_step(
             x_flow_all[i],
             y_flow_all[i],
             xc,
@@ -305,7 +187,7 @@ def _estimate_interval_flow(
     trail_t0 = float(gt_timestamps[i])
     trail_t1 = float(gt_timestamps[i + 1])
     trail_scale = (t_end - trail_t0) / (trail_t1 - trail_t0)
-    _propagate_flow_step(
+    propagate_flow_step(
         x_flow_all[i],
         y_flow_all[i],
         xc,
@@ -439,6 +321,7 @@ class MVSECDataLoader(DataLoaderBase):
         self._data_hdf5_path = hdf5_path
         davis_key = f"davis/{camera}"
         self._davis_key = davis_key
+        event_cache_name = f"{sequence}_{camera}"
 
         npz_path = os.path.join(root, f"{sequence}_gt_flow_dist.npz")
         category = sequence.rstrip("0123456789")
@@ -487,8 +370,7 @@ class MVSECDataLoader(DataLoaderBase):
                         self._event_backend = _CachedEventBackend.from_sidecar(
                             source_path=hdf5_path,
                             dataset_key=f"{davis_key}/events",
-                            sequence=sequence,
-                            camera=camera,
+                            cache_name=event_cache_name,
                             cache_root=self._cache_dir,
                         )
                     except OSError:
@@ -501,8 +383,7 @@ class MVSECDataLoader(DataLoaderBase):
                 self._event_backend = _LazyEventBackend(
                     source_path=hdf5_path,
                     dataset_key=f"{davis_key}/events",
-                    sequence=sequence,
-                    camera=camera,
+                    cache_name=event_cache_name,
                     cache_root=self._cache_dir,
                 )
 
@@ -913,7 +794,7 @@ class MVSECDataLoader(DataLoaderBase):
     def find_nearest_frame_index(self, t: float) -> int:
         if self._frame_ts is None or len(self._frame_ts) == 0:
             raise RuntimeError("Frame timestamps are not available for this sequence.")
-        return _find_nearest_index(self._frame_ts, t)
+        return find_nearest_index(self._frame_ts, t)
 
     def load_frame_sample(self, frame_index: int) -> dict[str, object]:
         """Load a synchronized single camera MVSEC sample for one frame."""
@@ -950,7 +831,7 @@ class MVSECDataLoader(DataLoaderBase):
 
         depth = None
         if self.has_gt_depth_raw and self._depth_raw_ts is not None and len(self._depth_raw_ts) > 0:
-            depth = self.load_depth_raw(_find_nearest_index(self._depth_raw_ts, frame_t))
+            depth = self.load_depth_raw(find_nearest_index(self._depth_raw_ts, frame_t))
 
         depth_rect = None
         if (
@@ -958,15 +839,15 @@ class MVSECDataLoader(DataLoaderBase):
             and self._depth_rect_ts is not None
             and len(self._depth_rect_ts) > 0
         ):
-            depth_rect = self.load_depth_rect(_find_nearest_index(self._depth_rect_ts, frame_t))
+            depth_rect = self.load_depth_rect(find_nearest_index(self._depth_rect_ts, frame_t))
 
         blended = None
         if self.has_gt_blended and self._blended_ts is not None and len(self._blended_ts) > 0:
-            blended = self.load_blended_image(_find_nearest_index(self._blended_ts, frame_t))
+            blended = self.load_blended_image(find_nearest_index(self._blended_ts, frame_t))
 
         velodyne = None
         if self.has_velodyne and self._velodyne_ts is not None and len(self._velodyne_ts) > 0:
-            velodyne = self.load_velodyne_scan(_find_nearest_index(self._velodyne_ts, frame_t))
+            velodyne = self.load_velodyne_scan(find_nearest_index(self._velodyne_ts, frame_t))
 
         pose = None
         if self.has_gt_pose:
@@ -999,6 +880,10 @@ class MVSECDataLoader(DataLoaderBase):
         return None
 
     # Calibration
+
+    @property
+    def valid_frame_range(self) -> Optional[Tuple[int, Optional[int]]]:
+        return self.VALID_FRAMES.get(self.sequence)
 
     @property
     def has_calibration(self) -> bool:
@@ -1110,7 +995,7 @@ class MVSECDataLoader(DataLoaderBase):
 
         if poses is None or ts is None:
             return None
-        pose: npt.NDArray[np.float64] = poses[_find_nearest_index(ts, t)].copy()
+        pose: npt.NDArray[np.float64] = poses[find_nearest_index(ts, t)].copy()
         return pose
 
     # GT depth

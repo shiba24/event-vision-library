@@ -1,5 +1,7 @@
 """MVSEC storage helpers and GT flow sidecar cache."""
 
+from __future__ import annotations
+
 import hashlib
 import json
 import os

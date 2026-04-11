@@ -14,6 +14,8 @@ The Multi Vehicle Stereo Event Camera Dataset: An Event Camera Dataset for 3D Pe
 IEEE Robotics and Automation Letters, 3(3), 2032-2039.
 """
 
+from __future__ import annotations
+
 import concurrent.futures
 import logging
 import os

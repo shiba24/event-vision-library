@@ -1,5 +1,7 @@
 """Reusable event sidecar cache and backend implementations."""
 
+from __future__ import annotations
+
 import abc
 import hashlib
 import json

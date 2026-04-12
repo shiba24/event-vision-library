@@ -8,6 +8,7 @@ import h5py
 import numpy as np
 import pytest
 
+from evlib.dataloaders import LoadingType
 from evlib.dataloaders._event_cache import _build_event_cache
 from evlib.dataloaders._event_cache import _CachedEventBackend
 from evlib.dataloaders._event_cache import _copy_event_rows_into_columns
@@ -30,8 +31,6 @@ from evlib.dataloaders._mvsec_storage import _write_json as _write_gt_flow_json
 from evlib.dataloaders._mvsec_storage import load_mvsec_gt_flow
 from evlib.dataloaders._mvsec_storage import resolve_mvsec_cache_dir
 from evlib.dataloaders._storage_common import _LazyH5Dataset
-from evlib.dataloaders._storage_common import normalize_resident_load_mode
-
 
 N_EVENTS = 50
 DATASET_KEY = "davis/left/events"
@@ -59,18 +58,26 @@ def _make_gt_flow_npz(path: str, n_frames: int = 5) -> None:
     )
 
 
-class TestNormalizeResidentLoadMode:
+class TestLoadingType:
     def test_cached(self) -> None:
-        result = normalize_resident_load_mode("events", "cached")
-        assert result == "cached"
+        result = LoadingType.from_resident_value("cached", name="events")
+        assert result is LoadingType.CACHED
 
     def test_lazy(self) -> None:
-        result = normalize_resident_load_mode("events", "lazy")
-        assert result == "lazy"
+        result = LoadingType.from_resident_value("lazy", name="events")
+        assert result is LoadingType.LAZY
+
+    def test_from_resident_enum(self) -> None:
+        result = LoadingType.from_resident_value(LoadingType.LAZY, name="events")
+        assert result is LoadingType.LAZY
+
+    def test_bool_is_invalid_for_resident_mode(self) -> None:
+        with pytest.raises(ValueError, match="events must be"):
+            LoadingType.from_resident_value(True, name="events")  # type: ignore[arg-type]
 
     def test_invalid_raises(self) -> None:
         with pytest.raises(ValueError, match="events must be"):
-            normalize_resident_load_mode("events", "invalid")
+            LoadingType.from_resident_value("invalid", name="events")  # type: ignore[arg-type]
 
 
 class TestResolveCacheDir:

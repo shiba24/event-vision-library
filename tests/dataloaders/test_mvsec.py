@@ -10,10 +10,10 @@ import h5py
 import numpy as np
 import pytest
 
+from evlib.dataloaders import LoadingType
 from evlib.dataloaders import MVSECOdometryData
 from evlib.dataloaders._base import DataLoaderBase
 from evlib.dataloaders._mvsec import MVSECDataLoader
-from evlib.dataloaders._mvsec import _resolve_load_mode
 from evlib.dataloaders.utils import find_nearest_index
 from evlib.types import RawEvents
 
@@ -188,30 +188,45 @@ def mvsec_full_dir(tmp_path: Path) -> Path:
 # Test helpers
 
 
-class TestResolveLoadMode:
+class TestLoadingType:
     def test_false(self) -> None:
-        should_load, should_cache = _resolve_load_mode(False)
-        assert should_load is False
-        assert should_cache is False
+        mode = LoadingType.from_value(False, name="load_gt_flow")
+        assert mode is LoadingType.OFF
+        assert not mode.should_load
+        assert not mode.should_cache
 
     def test_true(self) -> None:
-        should_load, should_cache = _resolve_load_mode(True)
-        assert should_load is True
-        assert should_cache is False
+        mode = LoadingType.from_value(True, name="load_gt_flow")
+        assert mode is LoadingType.LAZY
+        assert mode.should_load
+        assert not mode.should_cache
 
     def test_lazy_string(self) -> None:
-        should_load, should_cache = _resolve_load_mode("lazy")
-        assert should_load is True
-        assert should_cache is False
+        mode = LoadingType.from_value("lazy", name="load_gt_flow")
+        assert mode is LoadingType.LAZY
+        assert mode.should_load
+        assert not mode.should_cache
 
     def test_cached_string(self) -> None:
-        should_load, should_cache = _resolve_load_mode("cached")
-        assert should_load is True
-        assert should_cache is True
+        mode = LoadingType.from_value("cached", name="load_gt_flow")
+        assert mode is LoadingType.CACHED
+        assert mode.should_load
+        assert mode.should_cache
+
+    def test_resident_mode_from_enum(self, mvsec_dir: Path) -> None:
+        with MVSECDataLoader(
+            str(mvsec_dir),
+            SEQ,
+            load_calibration=False,
+            event_load_mode=LoadingType.LAZY,
+            image_load_mode=LoadingType.CACHED,
+        ) as loader:
+            assert loader.event_load_mode is LoadingType.LAZY
+            assert loader.image_load_mode is LoadingType.CACHED
 
     def test_invalid(self) -> None:
         with pytest.raises(ValueError):
-            _resolve_load_mode("invalid")  # type: ignore[arg-type]
+            LoadingType.from_value("invalid", name="load_gt_flow")  # type: ignore[arg-type]
 
 
 class TestResidentLoadModes:

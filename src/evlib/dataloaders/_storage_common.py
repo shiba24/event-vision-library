@@ -1,9 +1,12 @@
 """Common storage helpers shared by dataloader implementations."""
 
+from __future__ import annotations
+
 import os
+from enum import Enum
 from typing import Literal
 from typing import Optional
-from typing import cast
+from typing import Union
 
 import h5py
 import numpy as np
@@ -12,16 +15,65 @@ import numpy.typing as npt
 from evlib.codec.fileformat.hdf5 import open_hdf5
 
 
-ResidentLoadMode = Literal["cached", "lazy"]
+LoadMode = Union[bool, Literal["lazy", "cached"], "LoadingType"]
+ResidentLoadMode = Union[Literal["lazy", "cached"], "LoadingType"]
 
 
-def normalize_resident_load_mode(name: str, value: str) -> ResidentLoadMode:
-    """Validate and normalize a resident loading mode string."""
-    if value not in ("cached", "lazy"):
+class LoadingType(str, Enum):
+    """internal loading state for dataset modalities."""
+
+    OFF = "off"
+    LAZY = "lazy"
+    CACHED = "cached"
+
+    @classmethod
+    def from_value(
+        cls,
+        value: LoadMode,
+        *,
+        name: str = "loading type",
+    ) -> "LoadingType":
+        if isinstance(value, cls):
+            return value
+
+        if value is False:
+            return cls.OFF
+
+        if value is True or value == "lazy":
+            return cls.LAZY
+
+        if value == "cached":
+            return cls.CACHED
+
+        raise ValueError(f"Invalid {name}: {value!r}. Expected False, True, 'lazy', or 'cached'.")
+
+    @classmethod
+    def from_resident_value(
+        cls,
+        value: ResidentLoadMode,
+        *,
+        name: str,
+    ) -> "LoadingType":
+        if isinstance(value, cls):
+            if value is cls.OFF:
+                raise ValueError(f"{name} must be 'cached' or 'lazy', got {value!r}")
+            return value
+
+        if value == "lazy":
+            return cls.LAZY
+
+        if value == "cached":
+            return cls.CACHED
+
         raise ValueError(f"{name} must be 'cached' or 'lazy', got {value!r}")
 
-    mode = cast(ResidentLoadMode, value)
-    return mode
+    @property
+    def should_load(self) -> bool:
+        return self is not self.OFF
+
+    @property
+    def should_cache(self) -> bool:
+        return self is self.CACHED
 
 
 class _LazyH5Dataset:

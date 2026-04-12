@@ -21,10 +21,8 @@ import logging
 import os
 import warnings
 from typing import Dict
-from typing import Literal
 from typing import Optional
 from typing import Tuple
-from typing import Union
 from typing import cast
 
 import h5py
@@ -41,9 +39,10 @@ from ._event_cache import _LazyEventBackend
 from ._mvsec_storage import load_mvsec_gt_flow
 from ._mvsec_storage import resolve_mvsec_cache_dir
 from ._mvsec_types import MVSECOdometryData
+from ._storage_common import LoadingType
+from ._storage_common import LoadMode
 from ._storage_common import ResidentLoadMode
 from ._storage_common import _LazyH5Dataset
-from ._storage_common import normalize_resident_load_mode
 from .utils import find_nearest_index
 from .utils import get_flow_coordinate_grid
 from .utils import propagate_flow_step
@@ -51,29 +50,14 @@ from .utils import propagate_flow_step
 
 logger = logging.getLogger(__name__)
 
-# False = off, True/"lazy" = on demand, "cached" = in memory
-LoadMode = Union[bool, Literal["lazy", "cached"]]
-
-
-# Module lvl helpers
-
-
-def _resolve_load_mode(value: LoadMode) -> Tuple[bool, bool]:
-    """Parse a LoadMode into (should_load, should_cache)."""
-    if value is False:
-        return (False, False)
-    if value is True or value == "lazy":
-        return (True, False)
-    if value == "cached":
-        return (True, True)
-    raise ValueError(f"Invalid load mode: {value!r}. Expected False, True, 'lazy', or 'cached'.")
-
 
 def _resolve_depth_load_modes(
     load_gt_depth_raw: LoadMode,
     load_gt_depth_rect: LoadMode,
-) -> Tuple[Tuple[bool, bool], Tuple[bool, bool]]:
-    return _resolve_load_mode(load_gt_depth_raw), _resolve_load_mode(load_gt_depth_rect)
+) -> Tuple[LoadingType, LoadingType]:
+    raw_mode = LoadingType.from_value(load_gt_depth_raw, name="load_gt_depth_raw")
+    rect_mode = LoadingType.from_value(load_gt_depth_rect, name="load_gt_depth_rect")
+    return raw_mode, rect_mode
 
 
 def _load_calibration(
@@ -304,20 +288,24 @@ class MVSECDataLoader(DataLoaderBase):
             raise ValueError(f"camera must be 'left' or 'right', got '{camera}'")
         self.camera = camera
         has_explicit_cache = cache_dir is not None
-        self._event_load_mode = normalize_resident_load_mode("event_load_mode", event_load_mode)
-        self._image_load_mode = normalize_resident_load_mode("image_load_mode", image_load_mode)
+        self._event_load_mode = LoadingType.from_resident_value(
+            event_load_mode,
+            name="event_load_mode",
+        )
+        self._image_load_mode = LoadingType.from_resident_value(
+            image_load_mode,
+            name="image_load_mode",
+        )
         self._cache_dir = resolve_mvsec_cache_dir(cache_dir)
 
-        raw_depth_modes, rect_depth_modes = _resolve_depth_load_modes(
+        raw_depth_mode, rect_depth_mode = _resolve_depth_load_modes(
             load_gt_depth_raw,
             load_gt_depth_rect,
         )
-        do_load_gt_flow, do_cache_gt_flow = _resolve_load_mode(load_gt_flow)
-        do_load_depth_raw, do_cache_depth_raw = raw_depth_modes
-        do_load_depth_rect, do_cache_depth_rect = rect_depth_modes
-        do_load_flow_h5, do_cache_flow_h5 = _resolve_load_mode(load_gt_flow_hdf5)
-        do_load_blended, do_cache_blended = _resolve_load_mode(load_gt_blended)
-        do_load_velodyne, do_cache_velodyne = _resolve_load_mode(load_velodyne)
+        gt_flow_mode = LoadingType.from_value(load_gt_flow, name="load_gt_flow")
+        flow_h5_mode = LoadingType.from_value(load_gt_flow_hdf5, name="load_gt_flow_hdf5")
+        blended_mode = LoadingType.from_value(load_gt_blended, name="load_gt_blended")
+        velodyne_mode = LoadingType.from_value(load_velodyne, name="load_velodyne")
 
         hdf5_path = os.path.join(root, f"{sequence}_data.hdf5")
         self._data_hdf5_path = hdf5_path
@@ -328,7 +316,7 @@ class MVSECDataLoader(DataLoaderBase):
         npz_path = os.path.join(root, f"{sequence}_gt_flow_dist.npz")
         category = sequence.rstrip("0123456789")
 
-        has_gt_npz = do_load_gt_flow and os.path.isfile(npz_path)
+        has_gt_npz = gt_flow_mode.should_load and os.path.isfile(npz_path)
         odom_npz_path = os.path.join(root, f"{sequence}_odom.npz")
         has_odom_npz = load_odometry_npz and os.path.isfile(odom_npz_path)
 
@@ -365,7 +353,7 @@ class MVSECDataLoader(DataLoaderBase):
 
             # pick event backend - cached = all in RAM, lazy = sidecar mmap
             self._event_backend: _EventBackend
-            if self._event_load_mode == "cached":
+            if self._event_load_mode is LoadingType.CACHED:
                 if has_explicit_cache:
                     # try sidecar first, fallback direct HDF5 if broken
                     try:
@@ -397,7 +385,7 @@ class MVSECDataLoader(DataLoaderBase):
 
             self._has_images = "image_raw" in davis
             if self._has_images:
-                if self._image_load_mode == "cached":
+                if self._image_load_mode is LoadingType.CACHED:
                     self._images = np.array(davis["image_raw"], dtype=np.uint8)
                 else:
                     self._images_lazy = _LazyH5Dataset(
@@ -413,11 +401,11 @@ class MVSECDataLoader(DataLoaderBase):
                 else:
                     logger.warning("IMU data not found in %s", hdf5_path)
 
-            if do_load_velodyne:
+            if velodyne_mode.should_load:
                 if "velodyne" in data_h5 and "scans" in data_h5["velodyne"]:
                     vel = data_h5["velodyne"]
                     self._velodyne_ts = np.array(vel["scans_ts"], dtype=np.float64)
-                    if do_cache_velodyne:
+                    if velodyne_mode.should_cache:
                         self._velodyne_cached = np.array(vel["scans"], dtype=np.float32)
                     else:
                         self._velodyne_lazy = _LazyH5Dataset(
@@ -449,12 +437,12 @@ class MVSECDataLoader(DataLoaderBase):
         self._flow_h5_ts: Optional[npt.NDArray[np.float64]] = None
 
         needs_gt_h5 = (
-            do_load_depth_raw
-            or do_load_depth_rect
+            raw_depth_mode.should_load
+            or rect_depth_mode.should_load
             or load_gt_odometry
             or load_gt_poses
-            or do_load_flow_h5
-            or do_load_blended
+            or flow_h5_mode.should_load
+            or blended_mode.should_load
         )
         if needs_gt_h5 and os.path.isfile(gt_hdf5_path):
             with open_hdf5(gt_hdf5_path) as gt_h5:
@@ -469,14 +457,10 @@ class MVSECDataLoader(DataLoaderBase):
                         gt_group,
                         gt_hdf5_path,
                         gt_key,
-                        do_load_depth_raw,
-                        do_cache_depth_raw,
-                        do_load_depth_rect,
-                        do_cache_depth_rect,
-                        do_load_flow_h5,
-                        do_cache_flow_h5,
-                        do_load_blended,
-                        do_cache_blended,
+                        raw_depth_mode,
+                        rect_depth_mode,
+                        flow_h5_mode,
+                        blended_mode,
                     )
         elif needs_gt_h5:
             logger.warning("GT HDF5 file not found: %s", gt_hdf5_path)
@@ -485,14 +469,14 @@ class MVSECDataLoader(DataLoaderBase):
         self._gt_y_flow: Optional[npt.NDArray[np.float32]] = None
         self._gt_ts: Optional[npt.NDArray[np.float64]] = None
         if has_gt_npz:
-            mode: ResidentLoadMode = "cached" if do_cache_gt_flow else "lazy"
+            mode = LoadingType.CACHED if gt_flow_mode.should_cache else LoadingType.LAZY
             self._gt_x_flow, self._gt_y_flow, self._gt_ts = load_mvsec_gt_flow(
                 npz_path,
                 sequence,
                 self._cache_dir,
                 mode,
             )
-        elif do_load_gt_flow:
+        elif gt_flow_mode.should_load:
             logger.warning("GT flow file not found: %s", npz_path)
 
         self._x_map: Optional[npt.NDArray[np.float64]] = None
@@ -582,20 +566,16 @@ class MVSECDataLoader(DataLoaderBase):
         gt_group: h5py.Group,
         gt_hdf5_path: str,
         gt_davis_key: str,
-        do_load_depth_raw: bool,
-        do_cache_depth_raw: bool,
-        do_load_depth_rect: bool,
-        do_cache_depth_rect: bool,
-        do_load_flow_h5: bool,
-        do_cache_flow_h5: bool,
-        do_load_blended: bool,
-        do_cache_blended: bool,
+        raw_depth_mode: LoadingType,
+        rect_depth_mode: LoadingType,
+        flow_h5_mode: LoadingType,
+        blended_mode: LoadingType,
     ) -> None:
         """Load or set up lazy refs for large GT datasets."""
-        if do_load_depth_raw:
+        if raw_depth_mode.should_load:
             if "depth_image_raw" in gt_group:
                 self._depth_raw_ts = np.array(gt_group["depth_image_raw_ts"], dtype=np.float64)
-                if do_cache_depth_raw:
+                if raw_depth_mode.should_cache:
                     self._depth_raw_cached = np.array(gt_group["depth_image_raw"], dtype=np.float32)
                 else:
                     self._depth_raw_lazy = _LazyH5Dataset(
@@ -606,10 +586,10 @@ class MVSECDataLoader(DataLoaderBase):
             else:
                 logger.warning("depth_image_raw not found in gt HDF5.")
 
-        if do_load_depth_rect:
+        if rect_depth_mode.should_load:
             if "depth_image_rect" in gt_group:
                 self._depth_rect_ts = np.array(gt_group["depth_image_rect_ts"], dtype=np.float64)
-                if do_cache_depth_rect:
+                if rect_depth_mode.should_cache:
                     self._depth_rect_cached = np.array(
                         gt_group["depth_image_rect"],
                         dtype=np.float32,
@@ -623,10 +603,10 @@ class MVSECDataLoader(DataLoaderBase):
             else:
                 logger.warning("depth_image_rect not found in gt HDF5.")
 
-        if do_load_flow_h5:
+        if flow_h5_mode.should_load:
             if "flow_dist" in gt_group:
                 self._flow_h5_ts = np.array(gt_group["flow_dist_ts"], dtype=np.float64)
-                if do_cache_flow_h5:
+                if flow_h5_mode.should_cache:
                     self._flow_h5_cached = np.array(gt_group["flow_dist"], dtype=np.float64)
                 else:
                     self._flow_h5_lazy = _LazyH5Dataset(
@@ -637,10 +617,10 @@ class MVSECDataLoader(DataLoaderBase):
             else:
                 logger.warning("flow_dist not found in gt HDF5.")
 
-        if do_load_blended:
+        if blended_mode.should_load:
             if "blended_image_rect" in gt_group:
                 self._blended_ts = np.array(gt_group["blended_image_rect_ts"], dtype=np.float64)
-                if do_cache_blended:
+                if blended_mode.should_cache:
                     self._blended_cached = np.array(
                         gt_group["blended_image_rect"],
                         dtype=np.uint8,
@@ -763,11 +743,11 @@ class MVSECDataLoader(DataLoaderBase):
         return self._frame_event_inds
 
     @property
-    def event_load_mode(self) -> ResidentLoadMode:
+    def event_load_mode(self) -> LoadingType:
         return self._event_load_mode
 
     @property
-    def image_load_mode(self) -> ResidentLoadMode:
+    def image_load_mode(self) -> LoadingType:
         return self._image_load_mode
 
     @property

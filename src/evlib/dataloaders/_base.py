@@ -7,11 +7,18 @@ It is a separate hierarchy from class EventDataset
 a Dataset uses a DataLoader via composition, but a DataLoader is not a Dataset.
 """
 
+from __future__ import annotations
+
 import abc
+from typing import TYPE_CHECKING
 from typing import Any
 from typing import Iterator
 from typing import Optional
 from typing import Tuple
+
+
+if TYPE_CHECKING:
+    from typing_extensions import Self
 
 import numpy as np
 import numpy.typing as npt
@@ -277,7 +284,7 @@ class DataLoaderBase(abc.ABC):
         last_event_time = self.index_to_time(last_event_index)
         return last_event_time
 
-    def __enter__(self) -> "DataLoaderBase":
+    def __enter__(self) -> Self:
         return self
 
     def __exit__(self, *exc: Any) -> None:

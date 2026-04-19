@@ -13,6 +13,10 @@ for PyTorch-like DataLoader integration.
 
 import abc
 from typing import Any
+from typing import TypeVar
+
+
+EventDatasetT = TypeVar("EventDatasetT", bound="EventDataset")
 
 
 class EventDataset(abc.ABC):
@@ -26,7 +30,7 @@ class EventDataset(abc.ABC):
     def close(self) -> None:
         """Release resources (file handles, etc.)."""
 
-    def __enter__(self) -> "EventDataset":
+    def __enter__(self: EventDatasetT) -> EventDatasetT:
         return self
 
     def __exit__(self, *exc: Any) -> None:

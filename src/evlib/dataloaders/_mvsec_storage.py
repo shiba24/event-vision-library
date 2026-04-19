@@ -15,7 +15,7 @@ from typing import cast
 import numpy as np
 import numpy.typing as npt
 
-from ._storage_common import ResidentLoadMode
+from ._storage_common import LoadingType
 
 
 _GT_FLOW_CACHE_SCHEMA_VERSION = 1
@@ -172,9 +172,14 @@ def load_mvsec_gt_flow(
     source_path: str,
     sequence: str,
     cache_root: str,
-    load_mode: ResidentLoadMode,
+    load_mode: LoadingType,
 ) -> tuple[npt.NDArray[np.float32], npt.NDArray[np.float32], npt.NDArray[np.float64]]:
     """Load MVSEC GT flow arrays, build a decompressed sidecar if needed."""
+    if not isinstance(load_mode, LoadingType) or load_mode is LoadingType.OFF:
+        raise ValueError(
+            "load_mode must be LoadingType.CACHED or LoadingType.LAZY, " f"got {load_mode!r}"
+        )
+
     try:
         cache_dir = _make_gt_flow_cache_dir(cache_root, source_path, sequence)
         metadata = _gt_flow_cache_is_complete(cache_dir, source_path)
@@ -183,7 +188,7 @@ def load_mvsec_gt_flow(
 
         paths = _make_gt_flow_cache_paths(cache_dir)
         mmap_mode: Optional[Literal["r"]]
-        if load_mode == "lazy":
+        if load_mode is LoadingType.LAZY:
             mmap_mode = "r"
         else:
             mmap_mode = None
@@ -192,7 +197,7 @@ def load_mvsec_gt_flow(
         y_flow = np.load(paths["y"], mmap_mode=mmap_mode)
         timestamps = np.load(paths["timestamp"], mmap_mode=mmap_mode)
 
-        if load_mode == "cached":
+        if load_mode is LoadingType.CACHED:
             x_flow = np.asarray(x_flow, dtype=np.float32)
             y_flow = np.asarray(y_flow, dtype=np.float32)
             timestamps = np.asarray(timestamps, dtype=np.float64)

@@ -8,6 +8,7 @@ import pytest
 
 from evlib.dataloaders import LoadingType
 from evlib.dataloaders import MVSECOdometryData
+from evlib.datasets import event_sample_collate
 from evlib.datasets import mvsec_collate_fn
 from evlib.datasets._base import BlockAccessDataset
 from evlib.datasets._base import EventDataset
@@ -859,6 +860,9 @@ class TestMVSECIterator:
 
 
 class TestMVSECCollate:
+    def test_collate_aliases_generic_helper(self):
+        assert mvsec_collate_fn is event_sample_collate
+
     def test_collate_returns_lists_for_variable_fields(self, mvsec_dir):
         with MVSECDataset(str(mvsec_dir), SEQ) as ds:
             batch = mvsec_collate_fn([ds[0], ds[1]])

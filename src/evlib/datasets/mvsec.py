@@ -22,7 +22,6 @@ from __future__ import annotations
 
 from typing import Any
 from typing import Iterator
-from typing import List
 from typing import Optional
 from typing import Tuple
 
@@ -38,25 +37,10 @@ from evlib.types import RawEvents
 
 from ._base import BlockAccessDataset
 from ._base import IteratorAccessDataset
+from ._base import event_sample_collate
 
 
-def mvsec_collate_fn(batch: List[dict]) -> dict:
-    """Collate MVSEC samples with variable length events.
-
-    Uses batch[0] keys, stacks ``timestamp``, and leaves other fields as lists.
-    Preserves variable length events and ``None`` values.
-    """
-    if not batch:
-        raise ValueError("batch must not be empty")
-
-    result: dict = {}
-    for key in batch[0]:
-        values = [sample[key] for sample in batch]
-        if key == "timestamp":
-            result[key] = np.asarray(values, dtype=np.float64)
-        else:
-            result[key] = values
-    return result
+mvsec_collate_fn = event_sample_collate
 
 
 class MVSECDataset(BlockAccessDataset):

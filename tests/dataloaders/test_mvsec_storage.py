@@ -32,6 +32,7 @@ from evlib.dataloaders._mvsec_storage import load_mvsec_gt_flow
 from evlib.dataloaders._mvsec_storage import resolve_mvsec_cache_dir
 from evlib.dataloaders._storage_common import _LazyH5Dataset
 
+
 N_EVENTS = 50
 DATASET_KEY = "davis/left/events"
 
@@ -381,8 +382,8 @@ class TestLoadMvsecGTFlow:
         _make_gt_flow_npz(npz_path, n_frames=3)
         cache_root = str(tmp_path / "cache")
 
-        load_mvsec_gt_flow(npz_path, "seq1", cache_root, "cached")
-        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, "cached")
+        load_mvsec_gt_flow(npz_path, "seq1", cache_root, LoadingType.CACHED)
+        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, LoadingType.CACHED)
         assert len(t) == 3
 
     def test_cached_mode(self, tmp_path) -> None:  # type: ignore[no-untyped-def]
@@ -390,18 +391,35 @@ class TestLoadMvsecGTFlow:
         _make_gt_flow_npz(npz_path, n_frames=3)
         cache_root = str(tmp_path / "cache")
 
-        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, "cached")
+        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, LoadingType.CACHED)
         assert x.dtype == np.float32
         assert t.dtype == np.float64
         assert len(t) == 3
+        assert isinstance(x, np.ndarray)
+        assert isinstance(y, np.ndarray)
+        assert isinstance(t, np.ndarray)
+        assert not isinstance(x, np.memmap)
+        assert not isinstance(y, np.memmap)
+        assert not isinstance(t, np.memmap)
 
     def test_lazy_mode(self, tmp_path) -> None:  # type: ignore[no-untyped-def]
         npz_path = str(tmp_path / "flow.npz")
         _make_gt_flow_npz(npz_path, n_frames=3)
         cache_root = str(tmp_path / "cache")
 
-        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, "lazy")
+        x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, LoadingType.LAZY)
         assert len(t) == 3
+        assert isinstance(x, np.memmap)
+        assert isinstance(y, np.memmap)
+        assert isinstance(t, np.memmap)
+
+    def test_rejects_non_enum_mode(self, tmp_path) -> None:  # type: ignore[no-untyped-def]
+        npz_path = str(tmp_path / "flow.npz")
+        _make_gt_flow_npz(npz_path, n_frames=3)
+        cache_root = str(tmp_path / "cache")
+
+        with pytest.raises(ValueError, match="LoadingType.CACHED or LoadingType.LAZY"):
+            load_mvsec_gt_flow(npz_path, "seq1", cache_root, "cached")  # type: ignore[arg-type]
 
     def test_falls_back_on_os_error(self, tmp_path) -> None:  # type: ignore[no-untyped-def]
         npz_path = str(tmp_path / "flow.npz")
@@ -412,7 +430,7 @@ class TestLoadMvsecGTFlow:
             "evlib.dataloaders._mvsec_storage._make_gt_flow_cache_dir",
             side_effect=OSError("disk full"),
         ):
-            x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, "cached")
+            x, y, t = load_mvsec_gt_flow(npz_path, "seq1", cache_root, LoadingType.CACHED)
         assert len(t) == 3
 
 

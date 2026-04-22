@@ -13,6 +13,33 @@ for PyTorch-like DataLoader integration.
 
 import abc
 from typing import Any
+from typing import Dict
+from typing import List
+from typing import TypeVar
+
+import numpy as np
+
+
+EventDatasetT = TypeVar("EventDatasetT", bound="EventDataset")
+
+
+def event_sample_collate(batch: List[Dict[str, Any]]) -> Dict[str, Any]:
+    """Collate event dataset samples.
+
+    Stacks ``"timestamp"`` and keeps other fields as Python lists.
+    Preserves variable length events and ``None`` values.
+    """
+    if not batch:
+        raise ValueError("batch must not be empty")
+
+    result: Dict[str, Any] = {}
+    for key in batch[0]:
+        values = [sample[key] for sample in batch]
+        if key == "timestamp":
+            result[key] = np.asarray(values, dtype=np.float64)
+        else:
+            result[key] = values
+    return result
 
 
 class EventDataset(abc.ABC):
@@ -26,7 +53,7 @@ class EventDataset(abc.ABC):
     def close(self) -> None:
         """Release resources (file handles, etc.)."""
 
-    def __enter__(self) -> "EventDataset":
+    def __enter__(self: EventDatasetT) -> EventDatasetT:
         return self
 
     def __exit__(self, *exc: Any) -> None:

@@ -37,7 +37,7 @@ Please see our [examples](https://github.com/shiba24/event-vision-library/tree/m
 
 ## Features
 
-- Python 3.8, 3.9, 3.10, 3.11
+- Python 3.8, 3.9, 3.10, 3.11, 3.12
 - Pure-python library
 - Numpy and Torch compatibility.
 - 🚧 This library is under construction and currently alpha version. The APIs may change significantly. Contributions and discussions are welcomed! 🚧

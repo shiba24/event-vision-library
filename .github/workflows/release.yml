@@ -65,6 +65,8 @@ jobs:
       - name: Publish package on PyPI
         if: steps.check-version.outputs.tag
         uses: pypa/gh-action-pypi-publish@v1.13.0
+        with:
+          verbose: true
 
       # - name: Publish package on TestPyPI
       #   if: "! steps.check-version.outputs.tag"

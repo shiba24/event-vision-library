@@ -1,5 +1,6 @@
 """Tests for the DSEC dataloader."""
 
+import builtins
 import pickle  # noqa: S403
 from pathlib import Path
 from typing import Any
@@ -190,6 +191,8 @@ def _time_msg(timestamp_ns: int, time_cls: Any) -> Any:
 
 
 def _make_lidar_imu_bag(path: Path) -> None:
+    pytest.importorskip("rosbags.rosbag1", reason="DSEC LiDAR/IMU tests need rosbags")
+
     from rosbags.rosbag1 import Writer
     from rosbags.typesys import Stores
     from rosbags.typesys import get_typestore
@@ -885,6 +888,33 @@ class TestCalibration:  # noqa: D101
 
 
 class TestLidarImu:  # noqa: D101
+    def test_lidar_imu_request_explains_ros_extra_when_rosbags_missing(  # noqa: D102
+        self,
+        tmp_path: Path,
+        monkeypatch: pytest.MonkeyPatch,
+    ) -> None:
+        _build_cleaned_dsec_tree(tmp_path)
+        bag_path = tmp_path / "data" / DRIVE_PREFIX / "lidar_imu.bag"
+        bag_path.parent.mkdir(parents=True, exist_ok=True)
+        bag_path.touch()
+
+        real_import = builtins.__import__
+
+        def blocked_import(
+            name: str,
+            globals: Any = None,
+            locals: Any = None,
+            fromlist: Any = (),
+            level: int = 0,
+        ) -> Any:
+            if name == "rosbags" or name.startswith("rosbags."):
+                raise ImportError("blocked rosbags")
+            return real_import(name, globals, locals, fromlist, level)
+
+        monkeypatch.setattr(builtins, "__import__", blocked_import)
+        with pytest.raises(ImportError, match=r"event-vision-library\[ros\]"):
+            DSECDataLoader(str(tmp_path), SEQ, load_imu=True)
+
     def test_lazy_lidar_and_imu_load_from_cleaned_layout(  # noqa: D102
         self, tmp_path: Path
     ) -> None:

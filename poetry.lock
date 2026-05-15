@@ -84,10 +84,10 @@ trio = ["trio (>=0.31.0) ; python_version < \"3.10\"", "trio (>=0.32.0) ; python
 name = "apsw"
 version = "3.53.1.0"
 description = "Another Python SQLite Wrapper"
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\""
+markers = "extra == \"ros\" and python_version >= \"3.10\""
 files = [
     {file = "apsw-3.53.1.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6b1dd7c06491b9f34a1edb596ad832e63d8cf0120f5e5e0916003ba9139fdb77"},
     {file = "apsw-3.53.1.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4d1f5feb725b98b73a2693c54098c8401a677920e7d1435d795b84c9d1661354"},
@@ -494,10 +494,10 @@ files = [
 name = "cffi"
 version = "1.17.1"
 description = "Foreign Function Interface for Python calling C code."
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and platform_python_implementation == \"PyPy\""
+markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and extra == \"ros\" and platform_python_implementation == \"PyPy\""
 files = [
     {file = "cffi-1.17.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:df8b1c11f177bc2313ec4b2d46baec87a5f3e71fc8b45dab2ee7cae86d9aba14"},
     {file = "cffi-1.17.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8f2cdc858323644ab277e9bb925ad72ae0e67f69e804f4898c070998d50b1a67"},
@@ -5047,10 +5047,10 @@ files = [
 name = "pycparser"
 version = "2.23"
 description = "C parser in Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and platform_python_implementation == \"PyPy\""
+markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and extra == \"ros\" and platform_python_implementation == \"PyPy\""
 files = [
     {file = "pycparser-2.23-py3-none-any.whl", hash = "sha256:e5c6e8d3fbad53479cab09ac03729e0a9faf2bee3db8208a550daf5af81a5934"},
     {file = "pycparser-2.23.tar.gz", hash = "sha256:78816d4f24add8f10a06d6f05b4d424ad9e96cfebf68a4ddc99c65c0720d00c2"},
@@ -5497,10 +5497,10 @@ test = ["pytest (>=8)"]
 name = "rosbags"
 version = "0.9.23"
 description = "Pure Python library to read, modify, convert, and write rosbag files."
-optional = false
+optional = true
 python-versions = ">=3.8.2"
 groups = ["main"]
-markers = "python_full_version >= \"3.8.2\" and python_version < \"3.10\""
+markers = "python_full_version >= \"3.8.2\" and python_version < \"3.10\" and extra == \"ros\""
 files = [
     {file = "rosbags-0.9.23-py3-none-any.whl", hash = "sha256:0fd14b10ee5b2422a08b3a09d2171dc347925307716779ad6f21e398b280c56a"},
     {file = "rosbags-0.9.23.tar.gz", hash = "sha256:89229ca8fbb6d5e1cc452045229e6e47028dc10a8724fbe86c93eda477296dc2"},
@@ -5519,10 +5519,10 @@ dev = ["mypy", "pytest", "pytest-cov", "reuse", "ruff", "sphinx", "sphinx-autodo
 name = "rosbags"
 version = "0.11.1"
 description = "Pure Python library to read, modify, convert, and write rosbag files."
-optional = false
+optional = true
 python-versions = ">=3.10"
 groups = ["main"]
-markers = "python_version >= \"3.10\""
+markers = "extra == \"ros\" and python_version >= \"3.10\""
 files = [
     {file = "rosbags-0.11.1-py3-none-any.whl", hash = "sha256:4c01698654aca1b6fbad29c2c666afdf48395bd7f8571a9e8f9232f85e49535d"},
     {file = "rosbags-0.11.1.tar.gz", hash = "sha256:e121ed86818587544e0ba197e0aa95424b655fc262bc9530bffb5a1bec803965"},
@@ -5547,7 +5547,7 @@ files = [
     {file = "ruamel.yaml-0.18.16-py3-none-any.whl", hash = "sha256:048f26d64245bae57a4f9ef6feb5b552a386830ef7a826f235ffb804c59efbba"},
     {file = "ruamel.yaml-0.18.16.tar.gz", hash = "sha256:a6e587512f3c998b2225d68aa1f35111c29fad14aed561a26e73fab729ec5e5a"},
 ]
-markers = {main = "python_full_version >= \"3.8.2\""}
+markers = {main = "extra == \"ros\" and python_full_version >= \"3.8.2\""}
 
 [package.dependencies]
 "ruamel.yaml.clib" = {version = ">=0.2.7", markers = "platform_python_implementation == \"CPython\" and python_version < \"3.14\""}
@@ -5615,7 +5615,7 @@ files = [
     {file = "ruamel.yaml.clib-0.2.8-cp39-cp39-win_amd64.whl", hash = "sha256:25ac8c08322002b06fa1d49d1646181f0b2c72f5cbc15a85e80b4c30a544bb15"},
     {file = "ruamel.yaml.clib-0.2.8.tar.gz", hash = "sha256:beb2e0404003de9a4cab9753a8805a8fe9320ee6673136ed7f04255fe60bb512"},
 ]
-markers = {main = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and platform_python_implementation == \"CPython\"", dev = "platform_python_implementation == \"CPython\" and python_version == \"3.8\""}
+markers = {main = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and extra == \"ros\" and platform_python_implementation == \"CPython\"", dev = "platform_python_implementation == \"CPython\" and python_version == \"3.8\""}
 
 [[package]]
 name = "ruamel-yaml-clib"
@@ -5624,7 +5624,6 @@ description = "C version of reader, parser and emitter for ruamel.yaml derived f
 optional = false
 python-versions = ">=3.9"
 groups = ["main", "dev"]
-markers = "platform_python_implementation == \"CPython\" and python_version >= \"3.9\""
 files = [
     {file = "ruamel_yaml_clib-0.2.15-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:88eea8baf72f0ccf232c22124d122a7f26e8a24110a0273d9bcddcb0f7e1fa03"},
     {file = "ruamel_yaml_clib-0.2.15-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:9b6f7d74d094d1f3a4e157278da97752f16ee230080ae331fcc219056ca54f77"},
@@ -5688,6 +5687,7 @@ files = [
     {file = "ruamel_yaml_clib-0.2.15-cp39-cp39-win_amd64.whl", hash = "sha256:27dc656e84396e6d687f97c6e65fb284d100483628f02d95464fd731743a4afe"},
     {file = "ruamel_yaml_clib-0.2.15.tar.gz", hash = "sha256:46e4cc8c43ef6a94885f72512094e482114a8a706d3c555a34ed4b0d20200600"},
 ]
+markers = {main = "extra == \"ros\" and platform_python_implementation == \"CPython\" and python_version >= \"3.9\"", dev = "platform_python_implementation == \"CPython\" and python_version >= \"3.9\""}
 
 [[package]]
 name = "scipy"
@@ -7489,10 +7489,10 @@ type = ["pytest-mypy"]
 name = "zstandard"
 version = "0.23.0"
 description = "Zstandard bindings for Python"
-optional = false
+optional = true
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\""
+markers = "python_full_version >= \"3.8.2\" and python_version == \"3.8\" and extra == \"ros\""
 files = [
     {file = "zstandard-0.23.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:bf0a05b6059c0528477fba9054d09179beb63744355cab9f38059548fedd46a9"},
     {file = "zstandard-0.23.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:fc9ca1c9718cb3b06634c7c8dec57d24e9438b2aa9a0f02b8bb36bf478538880"},
@@ -7603,10 +7603,10 @@ cffi = ["cffi (>=1.11)"]
 name = "zstandard"
 version = "0.25.0"
 description = "Zstandard bindings for Python"
-optional = false
+optional = true
 python-versions = ">=3.9"
 groups = ["main"]
-markers = "python_version >= \"3.9\""
+markers = "extra == \"ros\" and python_version >= \"3.9\""
 files = [
     {file = "zstandard-0.25.0-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:e59fdc271772f6686e01e1b3b74537259800f57e24280be3f29c8a0deb1904dd"},
     {file = "zstandard-0.25.0-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:4d441506e9b372386a5271c64125f72d5df6d2a8e8a2a45a0ae09b03cb781ef7"},
@@ -7848,7 +7848,10 @@ files = [
     {file = "zstd-1.5.7.2.tar.gz", hash = "sha256:6d8684c69009be49e1b18ec251a5eb0d7e24f93624990a8a124a1da66a92fc8a"},
 ]
 
+[extras]
+ros = ["rosbags", "rosbags"]
+
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<3.12"
-content-hash = "dd1c1274a58ad182a6a663b08a7f6a09a6e193ebbd936048f4bc8d77c69f97ff"
+content-hash = "f99f2c5b619d20510bc1fe6ddf48f0acbab03618a8b605bda1a450b5f695e696"

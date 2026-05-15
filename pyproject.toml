@@ -35,9 +35,15 @@ numpy = [
     {version = ">=1.24.0", python = "==3.8"}
 ]
 h5py = ">=3.2"
+hdf5plugin = ">=4.4,<6.0"
 expelliarmus = ">=1.1.12"
 dv = ">=1.0.11"
 opencv-python = ">=4.6"
+pyyaml = ">=5.3.1"
+rosbags = [
+    {version = ">=0.9,<0.10", python = ">=3.8.2,<3.10", optional = true},
+    {version = ">=0.11,<0.12", python = ">=3.10", optional = true},
+]
 scipy = [
     {version = ">=1.9.1", python = ">=3.8,<3.12"}
 ]  # TODO check newer version of scipy
@@ -72,6 +78,9 @@ sphinx-autobuild = ">=2021.3.14"
 sphinx-click = ">=3.0.2"
 xdoctest = {extras = ["colors"], version = ">=0.15.10"}
 myst-parser = {version = ">=0.16.1"}
+
+[tool.poetry.extras]
+ros = ["rosbags"]
 
 [tool.poetry.scripts]
 event-vision-library = "evlib.__main__:main"

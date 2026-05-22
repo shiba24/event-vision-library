@@ -6,7 +6,7 @@
 pip install event-vision-library
 ```
 
-The supported python versions are 3.8. 3.9, 3.10, and 3.11.
+The supported python versions are 3.8, 3.9, 3.10, 3.11, and 3.12.
 
 ## Examples
 

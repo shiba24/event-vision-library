@@ -1,4 +1,5 @@
 """Nox sessions."""
+
 import os
 import shlex
 import shutil
@@ -23,7 +24,7 @@ except ImportError:
 
 
 package = "evlib"
-python_versions = ["3.10", "3.11", "3.9", "3.8"]    # 3.10 is the default
+python_versions = ["3.10", "3.11", "3.9", "3.8"]  # 3.10 is the default
 nox.needs_version = ">= 2021.6.6"
 nox.options.sessions = (
     # "pre-commit",
@@ -150,7 +151,7 @@ def mypy(session: Session) -> None:
 def tests(session: Session) -> None:
     """Run the test suite."""
     session.install(".")
-    session.install("coverage[toml]", "pytest", "pygments")
+    session.install("coverage[toml]", "flatbuffers", "pytest", "pygments")
     try:
         session.run("coverage", "run", "--parallel", "-m", "pytest", *session.posargs)
     finally:

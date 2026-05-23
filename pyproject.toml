@@ -2,10 +2,9 @@
 name = "event-vision-library"
 version = "0.0.5"
 description = "Event Vision Library"
-authors = ["Shintaro Shiba <shiba.shintaro@gmail.com>", "Friedhelm Hamann <friedhelmha2@gmail.com>"]
+authors = ["Shintaro Shiba <shiba.shintaro@gmail.com>", "Friedhelm Hamann <friedhelmha2@gmail.com>", "Nick Truong <nick.truong@uta.edu>"]
 maintainers = [
-    "Shintaro Shiba <shiba.shintaro@gmail.com>",
-    "Friedhelm Hamann <friedhelmha2@gmail.com>",
+    "Shintaro Shiba <shiba.shintaro@gmail.com>"
 ]
 license = "MIT"
 readme = "README.md"

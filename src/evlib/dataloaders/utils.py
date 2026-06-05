@@ -1,5 +1,6 @@
 """Shared helpers for dataloader indexing, caching, and optional decoding."""
 
+import os
 from collections import OrderedDict
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
@@ -18,6 +19,9 @@ import numpy.typing as npt
 _DecodedValueT = TypeVar("_DecodedValueT")
 
 _cv2: Any = None
+
+# ECD synthetic DAVIS sequences store depth maps as OpenEXR. OpenCV requires this opt in before cv2 is imported.
+os.environ.setdefault("OPENCV_IO_ENABLE_OPENEXR", "1")
 
 try:
     import cv2 as _cv2
@@ -78,7 +82,12 @@ def decode_in_parallel(
     *,
     max_workers: int,
 ) -> List[Any]:
-    """Decode files with a bounded thread pool."""
+    """Decode files with a bounded thread pool.
+
+    Returns a list, preserving each decoded payload as-is. Use
+    :func:`decode_to_array_stack` instead when every payload shares a shape
+    and should land in one preallocated array.
+    """
     if max_workers < 1:
         raise ValueError(f"max_workers must be >= 1, got {max_workers}")
 
@@ -90,6 +99,54 @@ def decode_in_parallel(
     workers = min(max_workers, len(paths))
     with ThreadPoolExecutor(max_workers=workers) as pool:
         return list(pool.map(decoder, paths))
+
+
+def decode_to_array_stack(
+    paths: List[str],
+    decoder: Callable[[str], Any],
+    *,
+    dtype: npt.DTypeLike,
+    max_workers: int,
+    description: str,
+) -> npt.NDArray[np.generic]:
+    """Decode files into one preallocated stacked array."""
+    if max_workers < 1:
+        raise ValueError(f"max_workers must be >= 1, got {max_workers}")
+    if not paths:
+        return np.empty((0,), dtype=dtype)
+
+    target_dtype = np.dtype(dtype)
+    first_item = np.asarray(decoder(paths[0]), dtype=target_dtype)
+    first_shape = first_item.shape
+    stacked = np.empty((len(paths), *first_shape), dtype=target_dtype)
+    stacked[0] = first_item
+
+    if len(paths) == 1:
+        return stacked
+
+    workers = min(max_workers, len(paths) - 1)
+    chunk_size = (len(paths) - 1 + workers - 1) // workers
+
+    def decode_range(index_range: Tuple[int, int]) -> None:
+        start_index, end_index = index_range
+        for index in range(start_index, end_index):
+            path = paths[index]
+            item = np.asarray(decoder(path), dtype=target_dtype)
+            if item.shape != first_shape:
+                raise ValueError(
+                    f"{description} shape mismatch: expected {first_shape}, "
+                    f"got {item.shape} for {path}."
+                )
+            stacked[index] = item
+
+    index_ranges = [
+        (start_index, min(start_index + chunk_size, len(paths)))
+        for start_index in range(1, len(paths), chunk_size)
+    ]
+    with ThreadPoolExecutor(max_workers=workers) as pool:
+        for _ in pool.map(decode_range, index_ranges):
+            pass
+    return stacked
 
 
 def normalize_index(index: int, sequence_length: int, item_name: str) -> int:

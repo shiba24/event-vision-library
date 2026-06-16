@@ -1512,74 +1512,6 @@ typing-extensions = {version = ">=4.6.0", markers = "python_version < \"3.13\""}
 test = ["pytest (>=6)"]
 
 [[package]]
-name = "expelliarmus"
-version = "1.1.12"
-description = ""
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "expelliarmus-1.1.12-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:6040a4cee3f84499763a999e5797e608e968c0473f48c11482275476f6c3c27f"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:eed18bb32bccc582d1d3abf47daffba65aaa23960fb105d35a4ab222fda8bcbc"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ff81b8afe170d1b365a2efb155361d01899429710357151f0447735f460319fb"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:ae88761817363d0fc2cb427e1e4603b034dd1a8aa7953d18ff82fd3bf9c618a5"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:4994b4ce5f690198dc2b86b3e51fdb51d8459e4940340132b55d7c54f94f1338"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-win32.whl", hash = "sha256:adc91cf689760acc56d1d8c8b35d1c1f94bb3195dbaa117c5287eba081b30569"},
-    {file = "expelliarmus-1.1.12-cp310-cp310-win_amd64.whl", hash = "sha256:26e00512c24f5e7791435097829f39d9f38fbeba46b797607049ee2b22c42895"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-macosx_10_9_x86_64.whl", hash = "sha256:4dc76e2e395274bf195c3f5ebe0eb14b84deed63fb41c9e2d6ba6a6d00efd5c8"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:260dcec354a94136478e91ff307302472fd9e072c83409afc162f7bbca717a4e"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:3af2892ae68546630260a09292ccdd21dd23399a1e4ac8dfd7fc91dc34f2e4ce"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:84196b48cec9eab9a8f56c7dfe6fca6fd23fd36a5d644b186674bb56ce1dd0be"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:8a2e4d69de9d650ad29dca0d2aed25d4900a08610d800b87b3eead087b422dc7"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-win32.whl", hash = "sha256:0f3dc9943d9f1ca8c3fa2ba4278dae9b524f649b9f7505251d247d3fe55e5b65"},
-    {file = "expelliarmus-1.1.12-cp311-cp311-win_amd64.whl", hash = "sha256:ca8709dfebf869c80c54b9e31b42f64844268c0d6c263d9f33dbecd685d4e6bc"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:3455efc4347b7c2aa50525e815f221f7b4cd047048119b19e860d6e8c8df3891"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:10e1687ba9da47087dc3dc58da3e0c0f33b73553702f6bca54b0a267a50e088f"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:7af216be7be2215578b8c83394b316018899de4f985bed96b9971799766f0251"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-musllinux_1_1_i686.whl", hash = "sha256:a1aee7e715ffa04f15f1c4742733931dcaeb6023f469569278bb8f51737ec8c4"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-musllinux_1_1_x86_64.whl", hash = "sha256:e40175be46ac050c49a74b6b82f97758c2be7875c4e76c49f1682d74a01f608b"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-win32.whl", hash = "sha256:68eaf0006952108807d850201af0579ab26395cf49ca422127cb4a96392ad521"},
-    {file = "expelliarmus-1.1.12-cp36-cp36m-win_amd64.whl", hash = "sha256:7efe3b7f9a093f17a2a1d5b7a5918ad5eb9f18889a086b075da03514e34d6dfc"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-macosx_10_9_x86_64.whl", hash = "sha256:1247219882845320399dd576cfac3be71a93677cb15e18ab942167e125b36abf"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c0c58f5c38afabe39121a431b03841742b39edcf693df77aa13add7849e77d67"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:5227aae90755382f303cdbca85a080e9895ea323ae02722fedb4e480c5755a1e"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-musllinux_1_1_i686.whl", hash = "sha256:c6b628a19361fb14571372aea91089dd1be21ae757345c4eaf32bbf289f158dd"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-musllinux_1_1_x86_64.whl", hash = "sha256:cfcc347ca7e006fa60bc4089f61ed715beb33db2389b7e224d196793d2e506fe"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-win32.whl", hash = "sha256:0eb810e07a89f1ca99f8c3e8232de152b7106f7f44681c84999a5fbc6c75bcaa"},
-    {file = "expelliarmus-1.1.12-cp37-cp37m-win_amd64.whl", hash = "sha256:4c056db3c42fe130a988ef8f88a3c04379a1e84a23f64471ec772e5d88fbb351"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-macosx_10_9_x86_64.whl", hash = "sha256:2bbf4840885838f75dafa6e80cac6cdab897a92e5c475e5e28e27b43ca03238b"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:2958594ce0bfcf7a31e0e58ec092f7260fdee2efc67814c74bcbe2c4c3b91bc5"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:0f9dcb57efa2f8a418a1fca99944113a408122781212f11514f63cd19f22bbb1"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-musllinux_1_1_i686.whl", hash = "sha256:b9a542e247657e6f46b390ef4f60d450fc2cfe195f14b2851c3861ea9f2db611"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-musllinux_1_1_x86_64.whl", hash = "sha256:7cf8103cc49db59f6d4a55f9dc839063a50e9dcae47f8fd371118aba8ac64916"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-win32.whl", hash = "sha256:8d93a8fdf7087d51a3e0070dfeabaf1c1910f8d5ac9240473d9ab9597671b077"},
-    {file = "expelliarmus-1.1.12-cp38-cp38-win_amd64.whl", hash = "sha256:a88f4581c50e0f020365f7f4a84b0f9196dff8cfa68d85a3ee26eb245c551e75"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-macosx_10_9_x86_64.whl", hash = "sha256:e46652153b92aa44081ee2ff899535d3e522f9a4ab01872ac43c39262278512d"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:731deb3d2f4d5045d58eeeb5c1ac02a9429e24f4cbc46bf3d6300c8f362280b4"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e4967f5ce1b2798fce480f445b9f9d5708dec7a7f456206a3d4b30acbdcc921e"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-musllinux_1_1_i686.whl", hash = "sha256:35fc80d99e1b17782a1b90d038adf180012daa347ea4d86734809f58c48d0627"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-musllinux_1_1_x86_64.whl", hash = "sha256:3580193c91a5c54042baef0c17093939b4c511362becf61552d9f1d0320b9329"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-win32.whl", hash = "sha256:ade588c2cd912d8b159a50a1275b508cb928eb185180969f35a350b523d9107e"},
-    {file = "expelliarmus-1.1.12-cp39-cp39-win_amd64.whl", hash = "sha256:3838e1c4e97e8ae102c305d6dbacee78bb6ed1c3fe33936e6d7a54764b0a230f"},
-    {file = "expelliarmus-1.1.12-pp37-pypy37_pp73-macosx_10_9_x86_64.whl", hash = "sha256:7469b16333bf565006d2dc97aecb0c03d893df63f212641a5ea575ff0a65fde8"},
-    {file = "expelliarmus-1.1.12-pp37-pypy37_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:ee48190e2d9c04c9159976ea73586f7a46f5b860476f65fc34a5c31685b352f8"},
-    {file = "expelliarmus-1.1.12-pp37-pypy37_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e42adbe723d1dbc99bf8cd37bd339cb14db6cbbf81c479ea4bf71404650aea29"},
-    {file = "expelliarmus-1.1.12-pp37-pypy37_pp73-win_amd64.whl", hash = "sha256:9ea7403d177058bad6f336012056b8a9b76cfbaaf1a3eb09a323f9292ca88963"},
-    {file = "expelliarmus-1.1.12-pp38-pypy38_pp73-macosx_10_9_x86_64.whl", hash = "sha256:01749ac685af1b91d6e4f60ba2481fb73021baf393d4a19969447b8cc1730da6"},
-    {file = "expelliarmus-1.1.12-pp38-pypy38_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:338597a86e6dbade129620db32e45077a719265d69d50f1f1901247b14c76319"},
-    {file = "expelliarmus-1.1.12-pp38-pypy38_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:6ef424427a6f84d6a0abba5108c870f0bf7696946485c46f64137372875a9459"},
-    {file = "expelliarmus-1.1.12-pp38-pypy38_pp73-win_amd64.whl", hash = "sha256:5f18d88f745b3088d60de450c9b83b20bb73957b7dae7984acfafaf4353e2d7e"},
-    {file = "expelliarmus-1.1.12-pp39-pypy39_pp73-macosx_10_9_x86_64.whl", hash = "sha256:b8966c9841335ffbd91a085191963446b48240a7d649a7b65c227873b9c05209"},
-    {file = "expelliarmus-1.1.12-pp39-pypy39_pp73-manylinux_2_5_i686.manylinux1_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a726c0f8682ee31472c47988ad5d1577821eee4fb52d6a7466eb878ed4385e6c"},
-    {file = "expelliarmus-1.1.12-pp39-pypy39_pp73-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:fa2a25828f4636fd55516f3767d772bef8c3cad2cd6b5dc3677d72ebfde8b022"},
-    {file = "expelliarmus-1.1.12-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:9fbbf71ac889a8d33198be2081740d344fd8ce8496d0e3c98168dc46dfddf93d"},
-    {file = "expelliarmus-1.1.12.tar.gz", hash = "sha256:69978d115af857016b82a78387a4d78ee952ed802998b9cf778feb80393d2c3d"},
-]
-
-[package.dependencies]
-numpy = "*"
-
-[[package]]
 name = "filelock"
 version = "3.16.1"
 description = "A platform independent file lock."
@@ -7712,4 +7644,4 @@ ros = ["rosbags", "rosbags"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<3.13"
-content-hash = "ced40b404642deb05a2503be62ddbf253742c636994d098b1a302ecb716ee5d8"
+content-hash = "39fbb1ae0fcbaefefbb801e1a012bc242d2e972eb3f29a82b791c31827a953b3"

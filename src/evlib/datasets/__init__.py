@@ -4,6 +4,13 @@ from ._base import BlockAccessDataset
 from ._base import EventDataset
 from ._base import IteratorAccessDataset
 from ._base import event_sample_collate
+from .ecd import ECD_DAVIS240C_SENSOR_RESOLUTION
+from .ecd import ECD_REAL_SEQUENCES
+from .ecd import ECD_SEQUENCES
+from .ecd import ECD_SYNTHETIC_SEQUENCES
+from .ecd import ECDDataset
+from .ecd import ECDIterator
+from .ecd import ecd_collate_fn
 from .mvsec import MVSECDataset
 from .mvsec import MVSECIterator
 from .mvsec import mvsec_collate_fn
@@ -11,8 +18,15 @@ from .mvsec import mvsec_collate_fn
 
 __all__ = [
     "BlockAccessDataset",
+    "ECDDataset",
+    "ECDIterator",
+    "ECD_DAVIS240C_SENSOR_RESOLUTION",
+    "ECD_REAL_SEQUENCES",
+    "ECD_SEQUENCES",
+    "ECD_SYNTHETIC_SEQUENCES",
     "EventDataset",
     "IteratorAccessDataset",
+    "ecd_collate_fn",
     "event_sample_collate",
     "MVSECDataset",
     "MVSECIterator",

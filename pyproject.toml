@@ -1,10 +1,11 @@
 [tool.poetry]
 name = "event-vision-library"
-version = "0.0.5"
+version = "0.0.6"
 description = "Event Vision Library"
 authors = ["Shintaro Shiba <shiba.shintaro@gmail.com>", "Friedhelm Hamann <friedhelmha2@gmail.com>", "Nick Truong <nick.truong@uta.edu>"]
 maintainers = [
-    "Shintaro Shiba <shiba.shintaro@gmail.com>"
+    "Shintaro Shiba <shiba.shintaro@gmail.com>",
+    "Nick Truong <nick.truong@uta.edu>"
 ]
 license = "MIT"
 readme = "README.md"

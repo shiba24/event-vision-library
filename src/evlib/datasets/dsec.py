@@ -12,7 +12,7 @@ from evlib.dataloaders import LoadMode
 from evlib.dataloaders import ResidentLoadMode
 
 from ._base import BlockAccessDataset
-from ._base import IteratorAccessDataset
+from ._base import BlockDatasetIterator
 from ._base import event_sample_collate
 
 
@@ -127,7 +127,7 @@ class DSECDataset(BlockAccessDataset):
         )
 
 
-class DSECIterator(IteratorAccessDataset):
+class DSECIterator(BlockDatasetIterator[DSECDataset]):
     """Streaming iterator over one DSEC sequence.
 
     Args:
@@ -138,13 +138,7 @@ class DSECIterator(IteratorAccessDataset):
 
     def __init__(self, root: str, sequence: str, **kwargs: Any) -> None:
         """Initialize an iterator over one DSEC sequence."""
-        self._dataset = DSECDataset(root, sequence, **kwargs)
-        self._current = 0
-
-    @property
-    def dataset(self) -> DSECDataset:
-        """Return the underlying map-style dataset."""
-        return self._dataset
+        super().__init__(DSECDataset(root, sequence, **kwargs))
 
     @property
     def root(self) -> str:
@@ -165,29 +159,6 @@ class DSECIterator(IteratorAccessDataset):
     def camera(self) -> DSECCamera:
         """Return the selected event camera stream: ``"left"`` or ``"right"``."""
         return self._dataset.camera
-
-    def __iter__(self) -> DSECIterator:
-        """Return the iterator reset to the first sample."""
-        self._current = 0
-        return self
-
-    def __next__(self) -> dict:
-        """Return the next synchronized sample."""
-        if self._current >= len(self._dataset):
-            raise StopIteration
-
-        current_index = self._current
-        sample = self._dataset[current_index]
-        self._current += 1
-        return sample
-
-    def reset(self) -> None:
-        """Reset the iteration cursor to the first sample."""
-        self._current = 0
-
-    def close(self) -> None:
-        """Release wrapped dataset resources."""
-        self._dataset.close()
 
     def __repr__(self) -> str:
         """Return a concise iterator representation."""

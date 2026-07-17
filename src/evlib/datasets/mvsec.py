@@ -36,7 +36,7 @@ from evlib.dataloaders import ResidentLoadMode
 from evlib.types import RawEvents
 
 from ._base import BlockAccessDataset
-from ._base import IteratorAccessDataset
+from ._base import BlockDatasetIterator
 from ._base import event_sample_collate
 
 
@@ -48,7 +48,7 @@ class MVSECDataset(BlockAccessDataset):
 
     Thin wrapper around class MVSECDataLoader that adds a frame indexed __getitem__ / __len__ contract suitable for PyTorch DataLoader integration.
 
-    For custom access patterns (overlapping windows, multi-scale pyramids, arbitrary time slicing), use the attr loader directly
+    For custom access patterns (overlapping windows, multiscale pyramids, arbitrary time slicing), use the attr loader directly
 
         ds = MVSECDataset(root, "indoor_flying1")
         loader = ds.loader
@@ -211,6 +211,11 @@ class MVSECDataset(BlockAccessDataset):
     def has_gt_flow(self) -> bool:
         """Whether ground truth optical flow is available."""
         return self._loader.has_gt_flow
+
+    @property
+    def valid_frame_range(self) -> Optional[Tuple[int, Optional[int]]]:
+        """Valid GT flow frame index range for this sequence, if known."""
+        return self._loader.valid_frame_range
 
     def load_optical_flow(self, t1: float, t2: float) -> npt.NDArray[np.float32]:
         """Load ground truth optical flow between two timestamps."""
@@ -495,7 +500,7 @@ class MVSECDataset(BlockAccessDataset):
         return self._loader.load_velodyne_scan(scan_index)
 
 
-class MVSECIterator(IteratorAccessDataset):
+class MVSECIterator(BlockDatasetIterator[MVSECDataset]):
     """Streaming iterator over MVSEC frames.
 
     Yields the same dicts as :meth:`MVSECDataset.__getitem__`, frame by frame.
@@ -507,8 +512,7 @@ class MVSECIterator(IteratorAccessDataset):
     """
 
     def __init__(self, root: str, sequence: str, **kwargs: Any) -> None:
-        self._dataset = MVSECDataset(root, sequence, **kwargs)
-        self._current = 0
+        super().__init__(MVSECDataset(root, sequence, **kwargs))
 
     @property
     def root(self) -> str:
@@ -522,24 +526,6 @@ class MVSECIterator(IteratorAccessDataset):
     def camera(self) -> str:
         return self._dataset.camera
 
-    def __iter__(self) -> "MVSECIterator":
-        self._current = 0
-        return self
-
-    def __next__(self) -> dict:
-        dataset_length = len(self._dataset)
-        exhausted = self._current >= dataset_length
-        if exhausted:
-            raise StopIteration
-        current_index = self._current
-        sample = self._dataset[current_index]
-        self._current += 1
-        return sample
-
-    def reset(self) -> None:
-        """Reset iteration cursor to the beginning."""
-        self._current = 0
-
     def __repr__(self) -> str:
         return (
             f"{type(self).__name__}("
@@ -547,6 +533,3 @@ class MVSECIterator(IteratorAccessDataset):
             f"sequence={self.sequence!r}, "
             f"camera={self.camera!r})"
         )
-
-    def close(self) -> None:
-        self._dataset.close()

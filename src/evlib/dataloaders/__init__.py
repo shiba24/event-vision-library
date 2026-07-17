@@ -6,7 +6,10 @@ from ._davis import DavisFrameSample
 from ._davis import DavisImuData
 from ._davis import DavisPoseData
 from ._davis import DavisRecordingLoader
+from ._dsec import DSECCamera
 from ._dsec import DSECDataLoader
+from ._dsec import DSECSample
+from ._dsec import DSECSplit
 from ._mvsec import MVSECDataLoader
 from ._mvsec_types import MVSECOdometryData
 from ._storage_common import LoadingType
@@ -20,7 +23,10 @@ __all__ = [
     "DavisImuData",
     "DavisPoseData",
     "DavisRecordingLoader",
+    "DSECCamera",
     "DSECDataLoader",
+    "DSECSample",
+    "DSECSplit",
     "DataLoaderBase",
     "LoadMode",
     "LoadingType",

@@ -6,7 +6,7 @@ from evlib.codec import fileformat
 aedat4_file_path = "./artifacts/sample_data/sample.aedat4"
 
 # Events
-# Each batch is a RawEvents with arrays [x, y, t, p]
+# Each batch is a RawEvents object. RawEvents.as_numpy() returns [y, x, t, p].
 event_iterator = fileformat.IteratorAedat4Event(aedat4_file_path)
 num_events = 0
 for events in event_iterator:

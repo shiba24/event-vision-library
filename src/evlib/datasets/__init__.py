@@ -4,6 +4,9 @@ from ._base import BlockAccessDataset
 from ._base import EventDataset
 from ._base import IteratorAccessDataset
 from ._base import event_sample_collate
+from .dsec import DSECDataset
+from .dsec import DSECIterator
+from .dsec import dsec_collate_fn
 from .ecd import ECD_DAVIS240C_SENSOR_RESOLUTION
 from .ecd import ECD_REAL_SEQUENCES
 from .ecd import ECD_SEQUENCES
@@ -18,6 +21,8 @@ from .mvsec import mvsec_collate_fn
 
 __all__ = [
     "BlockAccessDataset",
+    "DSECDataset",
+    "DSECIterator",
     "ECDDataset",
     "ECDIterator",
     "ECD_DAVIS240C_SENSOR_RESOLUTION",
@@ -26,6 +31,7 @@ __all__ = [
     "ECD_SYNTHETIC_SEQUENCES",
     "EventDataset",
     "IteratorAccessDataset",
+    "dsec_collate_fn",
     "ecd_collate_fn",
     "event_sample_collate",
     "MVSECDataset",

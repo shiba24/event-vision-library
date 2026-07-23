@@ -143,7 +143,8 @@ class EVK4Link:
             The register's current 32-bit value.
         """
         raw = self.tz(PROP_REG32, struct.pack("<III", device_id, addr, 1))
-        return struct.unpack("<I", raw[8:12])[0]
+        #return struct.unpack("<I", raw[8:12])[0]
+        return int(struct.unpack("<I", raw[8:12])[0])
 
     def reg_write(self, addr: int, val: int, device_id: int = 0) -> None:
         """Write a 32-bit device register.

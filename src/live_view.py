@@ -28,7 +28,7 @@ import cv2
 import numpy as np
 import numpy.typing as npt
 
-from usb_link import EVK4Link
+from evlib.codec.usb_link import EVK4Link
 
 sys.path.insert(0, str(Path("./event-vision-library/src")))
 from evlib.codec.fileformat._evt3 import Evt3RawReader

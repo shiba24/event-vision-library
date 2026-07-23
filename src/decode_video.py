@@ -86,7 +86,8 @@ class FrameAccumulator:
         self._on = np.zeros((height, width), dtype=np.float32)
         self._off = np.zeros((height, width), dtype=np.float32)
         self._start_ts: float | None = None
-        self._current_slice: int | None = None
+        #self._current_slice: int | None = None
+        self._current_slice: int = 0
 
         # Precomputed once so render_frame() doesn't reallocate a kernel
         # every call.
@@ -125,7 +126,8 @@ class FrameAccumulator:
 
         # Split the chunk into runs of constant slice_idx.
         change_points = np.flatnonzero(np.diff(slice_idx)) + 1
-        boundaries = np.concatenate(([0], change_points, [len(t)]))
+        #boundaries = np.concatenate(([0], change_points, [len(t)]))
+        boundaries = np.concatenate((np.array([0]), change_points, np.array([len(t)])))
 
         for i in range(len(boundaries) - 1):
             s, e = boundaries[i], boundaries[i + 1]
@@ -170,8 +172,10 @@ class FrameAccumulator:
         off_strength = np.clip(self._off * self.intensity_scale, 0, 255).astype(np.uint8)
 
         if self._kernel is not None:
-            on_strength = cv2.dilate(on_strength, self._kernel)
-            off_strength = cv2.dilate(off_strength, self._kernel)
+            #on_strength = cv2.dilate(on_strength, self._kernel)
+            cv2.dilate(on_strength, self._kernel, dst=on_strength)
+            #off_strength = cv2.dilate(off_strength, self._kernel)
+            cv2.dilate(off_strength, self._kernel, dst=off_strength)
 
         on_mask = on_strength > self.strength_threshold
         off_mask = off_strength > self.strength_threshold
@@ -233,7 +237,8 @@ def decode_to_video(
         decay=decay,
     )
     writer = cv2.VideoWriter(
-        output_video, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height)
+        #output_video, cv2.VideoWriter_fourcc(*"mp4v"), fps, (width, height)
+        output_video, cv2.VideoWriter.fourcc("m", "p", "4", "v"), fps, (width, height)
     )
 
     frames_written = 0

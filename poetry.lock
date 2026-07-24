@@ -7657,4 +7657,4 @@ ros = ["rosbags", "rosbags"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<3.13"
-content-hash = "5a6a2aa490d00673a297b4cc22d7233134a9fdefe09ea3910f8f3395cc131c0b"
+content-hash = "818643ecbb91a2dace8cac9d074d246c75e14d9e7581f5bc2c0077d9d4197a93"

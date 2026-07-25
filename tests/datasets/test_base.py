@@ -1,11 +1,18 @@
 """Tests for dataset base classes."""
 
 import pytest
+from torch.utils.data import DataLoader
+from torch.utils.data import Dataset as TorchDataset
+from torch.utils.data import IterableDataset as TorchIterableDataset
 
 from evlib.datasets._base import BlockAccessDataset
 from evlib.datasets._base import BlockDatasetIterator
 from evlib.datasets._base import EventDataset
 from evlib.datasets._base import IteratorAccessDataset
+
+
+def _events_only(batch: list) -> list:
+    return [sample["events"] for sample in batch]
 
 
 class _DummyEventDataset(EventDataset):
@@ -73,6 +80,10 @@ class TestDatasetBaseClasses:  # noqa: D101
         with pytest.raises(StopIteration):
             next(ds)
 
+    def test_base_classes_have_expected_torch_types(self) -> None:  # noqa: D102
+        assert isinstance(_DummyBlockDataset(), TorchDataset)
+        assert isinstance(_DummyIteratorDataset(), TorchIterableDataset)
+
     def test_reset_default_raises(self) -> None:  # noqa: D102
         ds = _DummyIteratorDataset()
         with pytest.raises(NotImplementedError):
@@ -85,6 +96,11 @@ class TestDatasetBaseClasses:  # noqa: D101
             BlockAccessDataset()  # type: ignore[abstract]
         with pytest.raises(TypeError):
             IteratorAccessDataset()  # type: ignore[abstract]
+
+    def test_block_access_dataset_feeds_torch_dataloader(self) -> None:  # noqa: D102
+        loader = DataLoader(_DummyBlockDataset(), batch_size=2, collate_fn=_events_only)
+        expected_batches = [[0, 1], [2]]
+        assert list(loader) == expected_batches
 
 
 class TestBlockDatasetIterator:  # noqa: D101
@@ -149,3 +165,13 @@ class TestBlockDatasetIterator:  # noqa: D101
         with BlockDatasetIterator(dataset) as iterator:
             assert next(iterator) == {"events": 0}
         assert dataset.closed is True
+
+    def test_torch_dataloader_rereads_every_epoch(self) -> None:  # noqa: D102
+        iterator = BlockDatasetIterator(_DummyBlockDataset())
+        loader = DataLoader(iterator, batch_size=2, collate_fn=_events_only)
+        expected_batches = [[0, 1], [2]]
+
+        first_epoch = list(loader)
+        second_epoch = list(loader)
+
+        assert first_epoch == second_epoch == expected_batches

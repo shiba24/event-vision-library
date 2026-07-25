@@ -4,6 +4,9 @@
     ├── BlockAccessDataset    - PyTorch map-style (__getitem__, __len__)
     └── IteratorAccessDataset - PyTorch iterable-style (__iter__, __next__)
 
+Each branch also derives from its torch.utils.data counterpart, so concrete
+datasets can be handed to a torch DataLoader directly.
+
 A DataLoader is not a Dataset. Dataset uses a DataLoader via composition.
 DataLoaders live in evlib.dataloaders and provide flexible I/O
 (load_events, time_to_index, etc.) for researchers with custom access
@@ -19,6 +22,8 @@ from typing import List
 from typing import TypeVar
 
 import numpy as np
+from torch.utils.data import Dataset as TorchDataset
+from torch.utils.data import IterableDataset as TorchIterableDataset
 from torch.utils.data import get_worker_info
 
 
@@ -69,7 +74,7 @@ class EventDataset(abc.ABC):
         self.close()
 
 
-class BlockAccessDataset(EventDataset):
+class BlockAccessDataset(EventDataset, TorchDataset):
     """Map style dataset supporting random access by frame index.
 
     PyTorch compatible contract:
@@ -94,11 +99,15 @@ class BlockAccessDataset(EventDataset):
         """Number of frames."""
 
 
-class IteratorAccessDataset(EventDataset):
+class IteratorAccessDataset(EventDataset, TorchIterableDataset):
     """Iterable style dataset for streaming/online sources.
 
     Subclasses must implement __iter__, which returns an iterator, and
     __next__, which returns a dict with at least an 'events' key.
+
+    Subclasses iterate themselves: __iter__ returns the dataset itself.
+    A torch DataLoader calls iter() once per epoch, so __iter__ must
+    start a fresh pass for the dataset to be readable more than once.
     """
 
     @abc.abstractmethod
@@ -121,10 +130,11 @@ class IteratorAccessDataset(EventDataset):
 class BlockDatasetIterator(IteratorAccessDataset, Generic[BlockDatasetT]):
     """Sequential cursor over a finite block access dataset.
 
-    Each call to :func:`iter` starts a new pass from the first sample. A partly
-    consumed pass therefore cannot be resumed with a second :func:`iter` call;
-    keep the iterator itself and call :func:`next`, or call :meth:`reset` to
-    rewind deliberately. Closing the iterator closes the wrapped dataset.
+    Each call to :func:`iter` starts a new pass from the first sample, which is
+    what lets a torch ``DataLoader`` read the sequence again on every epoch. A
+    partly consumed pass therefore cannot be resumed with a second :func:`iter`
+    call; keep the iterator itself and call :func:`next`, or call :meth:`reset`
+    to rewind deliberately. Closing the iterator closes the wrapped dataset.
 
     Use the wrapped map style dataset directly with a torch ``DataLoader``
     when worker processes, shuffling, or sampling are needed. This iterator

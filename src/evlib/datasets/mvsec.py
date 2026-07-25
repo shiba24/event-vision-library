@@ -46,9 +46,11 @@ mvsec_collate_fn = event_sample_collate
 class MVSECDataset(BlockAccessDataset):
     """MVSEC dataset (block access / map style).
 
-    Thin wrapper around class MVSECDataLoader that adds a frame indexed __getitem__ / __len__ contract suitable for PyTorch DataLoader integration.
+    Thin wrapper around class MVSECDataLoader that adds a frame indexed
+    __getitem__ / __len__ contract suitable for PyTorch DataLoader integration.
 
-    For custom access patterns (overlapping windows, multiscale pyramids, arbitrary time slicing), use the attr loader directly
+    For custom access patterns (overlapping windows, multiscale pyramids,
+    arbitrary time slicing), use the attr loader directly
 
         ds = MVSECDataset(root, "indoor_flying1")
         loader = ds.loader
@@ -99,6 +101,7 @@ class MVSECDataset(BlockAccessDataset):
         image_load_mode: ResidentLoadMode = "cached",
         cache_dir: Optional[str] = None,
     ) -> None:
+        """Initialize a map style dataset for one MVSEC sequence."""
         self._loader = MVSECDataLoader(
             root,
             sequence,
@@ -128,14 +131,17 @@ class MVSECDataset(BlockAccessDataset):
 
     @property
     def root(self) -> str:
+        """Return the dataset root passed to the loader."""
         return self._loader.root
 
     @property
     def sequence(self) -> str:
+        """Return the MVSEC sequence name."""
         return self._loader.sequence
 
     @property
     def camera(self) -> str:
+        """Return the selected event camera stream."""
         return self._loader.camera
 
     # BlockAccessDataset contract (PyTorch style)
@@ -149,9 +155,11 @@ class MVSECDataset(BlockAccessDataset):
         return self.num_frames
 
     def close(self) -> None:
+        """Release loader resources."""
         self._loader.close()
 
     def __repr__(self) -> str:
+        """Return a concise dataset representation."""
         return (
             f"{type(self).__name__}("
             f"root={self.root!r}, "
@@ -160,7 +168,8 @@ class MVSECDataset(BlockAccessDataset):
         )
 
     # Convenience delegations to loader.
-    # sections below expose selected loader APIs directly on the dataset so callers can use ds.load_events(...) without reaching through ds.loader.
+    # The sections below expose selected loader APIs directly on the dataset so
+    # callers can use ds.load_events(...) without reaching through ds.loader.
 
     def load_events(self, start_index: int, end_index: int) -> RawEvents:
         """Load events in [start_index, end_index)."""
@@ -508,25 +517,30 @@ class MVSECIterator(BlockDatasetIterator[MVSECDataset]):
     Args:
         root: Directory containing the MVSEC files.
         sequence: Sequence name.
-        **kwargs: Forwarded to class MVSECDataset.
+        ``**kwargs``: Forwarded to :class:`MVSECDataset`.
     """
 
     def __init__(self, root: str, sequence: str, **kwargs: Any) -> None:
+        """Initialize an iterator over one MVSEC sequence."""
         super().__init__(MVSECDataset(root, sequence, **kwargs))
 
     @property
     def root(self) -> str:
+        """Return the dataset root passed to the loader."""
         return self._dataset.root
 
     @property
     def sequence(self) -> str:
+        """Return the MVSEC sequence name."""
         return self._dataset.sequence
 
     @property
     def camera(self) -> str:
+        """Return the selected event camera stream."""
         return self._dataset.camera
 
     def __repr__(self) -> str:
+        """Return a concise iterator representation."""
         return (
             f"{type(self).__name__}("
             f"root={self.root!r}, "

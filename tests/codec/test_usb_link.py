@@ -17,12 +17,12 @@ from evlib.codec.usb_link import EVK4Link, PROP_REG32, PROP_REJECT_FLAG, PROP_WR
 
 
 class FakeEndpoint:
-    def __init__(self, address, transfer_type=usb.util.ENDPOINT_TYPE_BULK):
+    def __init__(self, address: int, transfer_type: int = usb.util.ENDPOINT_TYPE_BULK) -> None:
         self.bEndpointAddress = address
         self.bmAttributes = transfer_type
 
 
-def _make_device(endpoints):
+def _make_device(endpoints: list[FakeEndpoint]) -> MagicMock:
     dev = MagicMock()
     dev.get_active_configuration.return_value = {(0, 0): endpoints}
     return dev
@@ -32,20 +32,20 @@ def _make_device(endpoints):
 # Endpoint discovery
 # ---------------------------------------------------------------------------
 
-def test_raises_when_device_not_found():
+def test_raises_when_device_not_found() -> None:
     with patch("usb.core.find", return_value=None):
         with pytest.raises(RuntimeError, match="EVK4 not found"):
             EVK4Link()
 
 
-def test_raises_when_fewer_than_three_bulk_endpoints():
+def test_raises_when_fewer_than_three_bulk_endpoints() -> None:
     dev = _make_device([FakeEndpoint(0x02), FakeEndpoint(0x81)])
     with patch("usb.core.find", return_value=dev):
         with pytest.raises(RuntimeError, match="Expected 3 bulk endpoints"):
             EVK4Link()
 
 
-def test_raises_when_endpoint_directions_are_wrong_shape():
+def test_raises_when_endpoint_directions_are_wrong_shape() -> None:
     # 2 OUT, 1 IN instead of the required 1 OUT, 2 IN.
     dev = _make_device([FakeEndpoint(0x02), FakeEndpoint(0x03), FakeEndpoint(0x81)])
     with patch("usb.core.find", return_value=dev):
@@ -53,7 +53,7 @@ def test_raises_when_endpoint_directions_are_wrong_shape():
             EVK4Link()
 
 
-def test_correctly_assigns_endpoints_by_matching_number():
+def test_correctly_assigns_endpoints_by_matching_number() -> None:
     # OUT=0x02, matching ctrl-IN=0x82, data-IN=0x81.
     dev = _make_device([FakeEndpoint(0x02), FakeEndpoint(0x82), FakeEndpoint(0x81)])
     with patch("usb.core.find", return_value=dev):
@@ -63,7 +63,7 @@ def test_correctly_assigns_endpoints_by_matching_number():
     assert link.ep_data.bEndpointAddress == 0x81
 
 
-def test_falls_back_to_address_order_when_no_number_match():
+def test_falls_back_to_address_order_when_no_number_match() -> None:
     dev = _make_device([FakeEndpoint(0x05), FakeEndpoint(0x83), FakeEndpoint(0x81)])
     with patch("usb.core.find", return_value=dev):
         link = EVK4Link()
@@ -75,7 +75,7 @@ def test_falls_back_to_address_order_when_no_number_match():
 # tz / register access
 # ---------------------------------------------------------------------------
 
-def _linked_with_mock_dev():
+def _linked_with_mock_dev() -> EVK4Link:
     link = EVK4Link.__new__(EVK4Link)
     link.dev = MagicMock()
     link.ep_out = FakeEndpoint(0x02)
@@ -84,7 +84,7 @@ def _linked_with_mock_dev():
     return link
 
 
-def test_tz_sends_correct_header_and_returns_stripped_payload():
+def test_tz_sends_correct_header_and_returns_stripped_payload() -> None:
     link = _linked_with_mock_dev()
     payload = b"\x01\x02\x03\x04"
     resp = struct.pack("<II", PROP_REG32, 4) + b"\xAA\xBB\xCC\xDD"
@@ -97,7 +97,7 @@ def test_tz_sends_correct_header_and_returns_stripped_payload():
     assert result == b"\xAA\xBB\xCC\xDD"
 
 
-def test_tz_raises_when_device_rejects_property():
+def test_tz_raises_when_device_rejects_property() -> None:
     link = _linked_with_mock_dev()
     resp = struct.pack("<II", PROP_REG32 | PROP_REJECT_FLAG, 0)
     link.dev.read.return_value = resp.ljust(512, b"\x00")
@@ -106,7 +106,7 @@ def test_tz_raises_when_device_rejects_property():
         link.tz(PROP_REG32)
 
 
-def test_reg_read_returns_correct_int_value():
+def test_reg_read_returns_correct_int_value() -> None:
     link = _linked_with_mock_dev()
     resp = struct.pack("<II", PROP_REG32, 12) + b"\x00" * 8 + struct.pack("<I", 0xDEADBEEF)
     link.dev.read.return_value = resp.ljust(512, b"\x00")
@@ -117,7 +117,7 @@ def test_reg_read_returns_correct_int_value():
     assert isinstance(value, int)
 
 
-def test_reg_write_sets_write_flag_and_sends_value():
+def test_reg_write_sets_write_flag_and_sends_value() -> None:
     link = _linked_with_mock_dev()
     link.dev.read.return_value = struct.pack("<II", 0, 0).ljust(512, b"\x00")
 
@@ -131,7 +131,7 @@ def test_reg_write_sets_write_flag_and_sends_value():
     assert val == 0x5678
 
 
-def test_reg_write_field_only_changes_masked_bits():
+def test_reg_write_field_only_changes_masked_bits() -> None:
     link = _linked_with_mock_dev()
     with patch.object(link, "reg_read", return_value=0b1111_0000), \
          patch.object(link, "reg_write") as mock_write:
@@ -146,7 +146,7 @@ def test_reg_write_field_only_changes_masked_bits():
 # streaming
 # ---------------------------------------------------------------------------
 
-def test_run_start_writes_expected_number_of_registers():
+def test_run_start_writes_expected_number_of_registers() -> None:
     link = _linked_with_mock_dev()
     with patch.object(link, "reg_write") as mock_write, \
          patch.object(link, "reg_write_field") as mock_write_field:
@@ -156,7 +156,7 @@ def test_run_start_writes_expected_number_of_registers():
     assert mock_write_field.call_count == 2
 
 
-def test_read_data_returns_bytes_from_data_endpoint():
+def test_read_data_returns_bytes_from_data_endpoint() -> None:
     link = _linked_with_mock_dev()
     link.dev.read.return_value = b"\x01\x02\x03"
 
@@ -166,7 +166,7 @@ def test_read_data_returns_bytes_from_data_endpoint():
     link.dev.read.assert_called_once_with(link.ep_data.bEndpointAddress, 1024, timeout=500)
 
 
-def test_stream_yields_empty_bytes_on_timeout_then_continues():
+def test_stream_yields_empty_bytes_on_timeout_then_continues() -> None:
     link = _linked_with_mock_dev()
     timeout_error = usb.core.USBError("timed out")
     timeout_error.errno = 60
@@ -178,7 +178,7 @@ def test_stream_yields_empty_bytes_on_timeout_then_continues():
     assert next(gen) == b"\x01\x02\x03"
 
 
-def test_stream_reraises_non_timeout_errors():
+def test_stream_reraises_non_timeout_errors() -> None:
     link = _linked_with_mock_dev()
     error = usb.core.USBError("permission denied")
     error.errno = 13  # not a recognized timeout errno

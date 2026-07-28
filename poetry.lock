@@ -5224,6 +5224,19 @@ tokenize-rt = ">=6.1.0"
 
 [[package]]
 name = "pyusb"
+version = "1.2.1"
+description = "Python USB access module"
+optional = false
+python-versions = ">=3.6.0"
+groups = ["main"]
+markers = "python_version == \"3.8\""
+files = [
+    {file = "pyusb-1.2.1-py3-none-any.whl", hash = "sha256:2b4c7cb86dbadf044dfb9d3a4ff69fd217013dbe78a792177a3feb172449ea36"},
+    {file = "pyusb-1.2.1.tar.gz", hash = "sha256:a4cc7404a203144754164b8b40994e2849fde1cfff06b08492f12fff9d9de7b9"},
+]
+
+[[package]]
+name = "pyusb"
 version = "1.3.1"
 description = "Easy USB access for Python"
 optional = false
@@ -7657,4 +7670,4 @@ ros = ["rosbags", "rosbags"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.8,<3.13"
-content-hash = "818643ecbb91a2dace8cac9d074d246c75e14d9e7581f5bc2c0077d9d4197a93"
+content-hash = "5c788eb91d95c6149d989ab492fead5b02617fcc989e8332479aa10d0a9a1019"

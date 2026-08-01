@@ -1,4 +1,4 @@
-nox==2026.2.9
+nox==2026.7.11
 nox-poetry==1.2.0
 poetry==2.3.3
 virtualenv==20.31.2

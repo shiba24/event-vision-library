@@ -323,6 +323,7 @@ class TestMVSECDataset:
         with MVSECDataset(str(mvsec_dir), SEQ) as ds:
             assert ds.num_frames == N_FRAMES
             assert len(ds) == N_FRAMES
+            assert ds.valid_frame_range == ds.loader.valid_frame_range == (60, 1340)
             frame_timestamps = ds.frame_timestamps
             frame_event_indices = ds.frame_event_indices
             assert frame_timestamps is not None

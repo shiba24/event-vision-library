@@ -1,6 +1,7 @@
 """Dataset base classes for event camera datasets."""
 
 from ._base import BlockAccessDataset
+from ._base import BlockDatasetIterator
 from ._base import EventDataset
 from ._base import IteratorAccessDataset
 from ._base import event_sample_collate
@@ -21,6 +22,7 @@ from .mvsec import mvsec_collate_fn
 
 __all__ = [
     "BlockAccessDataset",
+    "BlockDatasetIterator",
     "DSECDataset",
     "DSECIterator",
     "ECDDataset",

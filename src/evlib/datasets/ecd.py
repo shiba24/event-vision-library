@@ -40,7 +40,7 @@ from evlib.dataloaders import ResidentLoadMode
 from evlib.types import RawEvents
 
 from ._base import BlockAccessDataset
-from ._base import IteratorAccessDataset
+from ._base import BlockDatasetIterator
 from ._base import event_sample_collate
 
 
@@ -502,7 +502,7 @@ class ECDDataset(BlockAccessDataset):
         return self._loader.load_depth(depth_index)
 
 
-class ECDIterator(IteratorAccessDataset):
+class ECDIterator(BlockDatasetIterator[ECDDataset]):
     """Streaming iterator over an ECD sequence.
 
     Yields the same dicts as :meth:`ECDDataset.__getitem__`, frame by frame.
@@ -515,13 +515,7 @@ class ECDIterator(IteratorAccessDataset):
 
     def __init__(self, root: str, sequence: str, **kwargs: Any) -> None:
         """Initialize an iterator over one ECD sequence."""
-        self._dataset = ECDDataset(root, sequence, **kwargs)
-        self._current = 0
-
-    @property
-    def dataset(self) -> ECDDataset:
-        """Underlying map style ECD dataset."""
-        return self._dataset
+        super().__init__(ECDDataset(root, sequence, **kwargs))
 
     @property
     def root(self) -> str:
@@ -537,30 +531,6 @@ class ECDIterator(IteratorAccessDataset):
     def camera_model(self) -> str:
         """Camera model for real ECD DAVIS sequences."""
         return self._dataset.camera_model
-
-    def __iter__(self) -> ECDIterator:
-        """Return the iterator reset to the first frame."""
-        self._current = 0
-        return self
-
-    def __next__(self) -> dict:
-        """Return the next frame indexed sample."""
-        dataset_length = len(self._dataset)
-        if self._current >= dataset_length:
-            raise StopIteration
-
-        current_index = self._current
-        sample = self._dataset[current_index]
-        self._current += 1
-        return sample
-
-    def reset(self) -> None:
-        """Reset iteration cursor to the beginning."""
-        self._current = 0
-
-    def close(self) -> None:
-        """Release wrapped dataset resources."""
-        self._dataset.close()
 
     def __repr__(self) -> str:
         """Return a concise iterator representation."""

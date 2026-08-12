@@ -10,6 +10,8 @@ from ._dsec import DSECCamera
 from ._dsec import DSECDataLoader
 from ._dsec import DSECSample
 from ._dsec import DSECSplit
+from ._dsec_rosbag import DSECImuData
+from ._dsec_rosbag import DSECLidarScan
 from ._mvsec import MVSECDataLoader
 from ._mvsec_types import MVSECOdometryData
 from ._storage_common import LoadingType
@@ -25,6 +27,8 @@ __all__ = [
     "DavisRecordingLoader",
     "DSECCamera",
     "DSECDataLoader",
+    "DSECImuData",
+    "DSECLidarScan",
     "DSECSample",
     "DSECSplit",
     "DataLoaderBase",

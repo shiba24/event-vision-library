@@ -36,7 +36,7 @@ from evlib.dataloaders import ResidentLoadMode
 from evlib.types import RawEvents
 
 from ._base import BlockAccessDataset
-from ._base import IteratorAccessDataset
+from ._base import BlockDatasetIterator
 from ._base import event_sample_collate
 
 
@@ -46,9 +46,11 @@ mvsec_collate_fn = event_sample_collate
 class MVSECDataset(BlockAccessDataset):
     """MVSEC dataset (block access / map style).
 
-    Thin wrapper around class MVSECDataLoader that adds a frame indexed __getitem__ / __len__ contract suitable for PyTorch DataLoader integration.
+    Thin wrapper around class MVSECDataLoader that adds a frame indexed
+    __getitem__ / __len__ contract suitable for PyTorch DataLoader integration.
 
-    For custom access patterns (overlapping windows, multi-scale pyramids, arbitrary time slicing), use the attr loader directly
+    For custom access patterns (overlapping windows, multiscale pyramids,
+    arbitrary time slicing), use the attr loader directly
 
         ds = MVSECDataset(root, "indoor_flying1")
         loader = ds.loader
@@ -99,6 +101,7 @@ class MVSECDataset(BlockAccessDataset):
         image_load_mode: ResidentLoadMode = "cached",
         cache_dir: Optional[str] = None,
     ) -> None:
+        """Initialize a map style dataset for one MVSEC sequence."""
         self._loader = MVSECDataLoader(
             root,
             sequence,
@@ -128,14 +131,17 @@ class MVSECDataset(BlockAccessDataset):
 
     @property
     def root(self) -> str:
+        """Return the dataset root passed to the loader."""
         return self._loader.root
 
     @property
     def sequence(self) -> str:
+        """Return the MVSEC sequence name."""
         return self._loader.sequence
 
     @property
     def camera(self) -> str:
+        """Return the selected event camera stream."""
         return self._loader.camera
 
     # BlockAccessDataset contract (PyTorch style)
@@ -149,9 +155,11 @@ class MVSECDataset(BlockAccessDataset):
         return self.num_frames
 
     def close(self) -> None:
+        """Release loader resources."""
         self._loader.close()
 
     def __repr__(self) -> str:
+        """Return a concise dataset representation."""
         return (
             f"{type(self).__name__}("
             f"root={self.root!r}, "
@@ -160,7 +168,8 @@ class MVSECDataset(BlockAccessDataset):
         )
 
     # Convenience delegations to loader.
-    # sections below expose selected loader APIs directly on the dataset so callers can use ds.load_events(...) without reaching through ds.loader.
+    # The sections below expose selected loader APIs directly on the dataset so
+    # callers can use ds.load_events(...) without reaching through ds.loader.
 
     def load_events(self, start_index: int, end_index: int) -> RawEvents:
         """Load events in [start_index, end_index)."""
@@ -211,6 +220,11 @@ class MVSECDataset(BlockAccessDataset):
     def has_gt_flow(self) -> bool:
         """Whether ground truth optical flow is available."""
         return self._loader.has_gt_flow
+
+    @property
+    def valid_frame_range(self) -> Optional[Tuple[int, Optional[int]]]:
+        """Valid GT flow frame index range for this sequence, if known."""
+        return self._loader.valid_frame_range
 
     def load_optical_flow(self, t1: float, t2: float) -> npt.NDArray[np.float32]:
         """Load ground truth optical flow between two timestamps."""
@@ -495,7 +509,7 @@ class MVSECDataset(BlockAccessDataset):
         return self._loader.load_velodyne_scan(scan_index)
 
 
-class MVSECIterator(IteratorAccessDataset):
+class MVSECIterator(BlockDatasetIterator[MVSECDataset]):
     """Streaming iterator over MVSEC frames.
 
     Yields the same dicts as :meth:`MVSECDataset.__getitem__`, frame by frame.
@@ -503,50 +517,33 @@ class MVSECIterator(IteratorAccessDataset):
     Args:
         root: Directory containing the MVSEC files.
         sequence: Sequence name.
-        **kwargs: Forwarded to class MVSECDataset.
+        ``**kwargs``: Forwarded to :class:`MVSECDataset`.
     """
 
     def __init__(self, root: str, sequence: str, **kwargs: Any) -> None:
-        self._dataset = MVSECDataset(root, sequence, **kwargs)
-        self._current = 0
+        """Initialize an iterator over one MVSEC sequence."""
+        super().__init__(MVSECDataset(root, sequence, **kwargs))
 
     @property
     def root(self) -> str:
+        """Return the dataset root passed to the loader."""
         return self._dataset.root
 
     @property
     def sequence(self) -> str:
+        """Return the MVSEC sequence name."""
         return self._dataset.sequence
 
     @property
     def camera(self) -> str:
+        """Return the selected event camera stream."""
         return self._dataset.camera
 
-    def __iter__(self) -> "MVSECIterator":
-        self._current = 0
-        return self
-
-    def __next__(self) -> dict:
-        dataset_length = len(self._dataset)
-        exhausted = self._current >= dataset_length
-        if exhausted:
-            raise StopIteration
-        current_index = self._current
-        sample = self._dataset[current_index]
-        self._current += 1
-        return sample
-
-    def reset(self) -> None:
-        """Reset iteration cursor to the beginning."""
-        self._current = 0
-
     def __repr__(self) -> str:
+        """Return a concise iterator representation."""
         return (
             f"{type(self).__name__}("
             f"root={self.root!r}, "
             f"sequence={self.sequence!r}, "
             f"camera={self.camera!r})"
         )
-
-    def close(self) -> None:
-        self._dataset.close()

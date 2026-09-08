@@ -26,7 +26,7 @@ with DSECDataset(
     loader = DataLoader(
         dataset,
         batch_size=4,
-        num_workers=2,
+        num_workers=0,
         collate_fn=dsec_collate_fn,
     )
     batch = next(iter(loader))
@@ -63,6 +63,7 @@ with MVSECDataLoader(
     "/data/MVSEC/indoor_flying",
     "indoor_flying1",
     event_load_mode="lazy",
+    image_load_mode="lazy",
 ) as reader:
     packet = reader.load_events(0, 30_000)
     start = reader.index_to_time(0)

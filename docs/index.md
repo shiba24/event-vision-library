@@ -15,6 +15,7 @@ maxdepth: 1
 ---
 
 usage
+data_loading
 reference
 contributing
 Code of Conduct <codeofconduct>

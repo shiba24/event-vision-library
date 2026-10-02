@@ -8,6 +8,7 @@ from typing import Tuple
 
 import h5py
 import numpy as np
+import types
 
 from ._iterator_access import IteratorAccess
 from .hdf5 import hdf5append
@@ -35,38 +36,43 @@ def convert_iterator_access_to_hdf5(
     Returns:
         int ... number of data processed.
     """
-    logger.info(f"Convert data {iterator_access.FORMAT} from {iterator_access.file_name}")
+    logger.info(f"Convert data {iterator_access.FORMAT} from {iterator_access.file_name}.")
+    print("Notice: conversion starts running, it may take a few minutes.")
     logger.info(f"The key-value map (Iterator data -> Hdf5 key): {key_pairs}")
     logger.info(f"Saving events into {hdf5file}")
     # TODO add filecheck of the hdf5.
     i = 0
     with h5py.File(hdf5file, "w") as f:
         for iter_data in iterator_access:
-            if i == 0:
-                for (k, v) in key_pairs.items():
-                    if k in image_keys:
-                        image = iter_data[k]
-                        maxshape = (None,) + image.shape[1:]
-                        f.create_dataset(
-                            v,
-                            data=image,
-                            maxshape=maxshape,
-                            compression="gzip",
-                            compression_opts=9,
-                        )
-                    else:
-                        f.create_dataset(
-                            v,
-                            data=iter_data[k],
-                            maxshape=(None,),
-                            compression="gzip",
-                            compression_opts=9,
-                        )
-            else:
-                for (k, v) in key_pairs.items():
-                    hdf5append(f[v], iter_data[k])
-            i += len(iter_data)
+            if not isinstance(iter_data, types.GeneratorType):
+                iter_data = [iter_data]  # hotfix for EVK3 data loader.
+            for iiter in iter_data:
+                if i == 0:
+                    for (k, v) in key_pairs.items():
+                        if k in image_keys:
+                            image = iiter[k]
+                            maxshape = (None,) + image.shape[1:]
+                            f.create_dataset(
+                                v,
+                                data=image,
+                                maxshape=maxshape,
+                                compression="gzip",
+                                compression_opts=9,
+                            )
+                        else:
+                            f.create_dataset(
+                                v,
+                                data=iiter[k],
+                                maxshape=(None,),
+                                compression="gzip",
+                                compression_opts=9,
+                            )
+                else:
+                    for (k, v) in key_pairs.items():
+                        hdf5append(f[v], iiter[k])
+                i += len(iiter)
     logger.info(f"Done. Total {i} data points are processed.")
+    print(f"Done. Total {i} data points are processed.")
     return i
 
 
